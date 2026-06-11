@@ -185,22 +185,6 @@
   }
   body.dark .btn-main{background:#93a9ea; color:#141a2b;}
   body.dark .btn-main:not(:disabled):hover{background:#a9bdf2;}
-  /* Than chì + oải hương */
-  body.dark.t2{
-    --paper:#17181d; --card:#1f2128; --ink:#e9e8f0; --muted:#9b9aaa; --hair:#30323e; --hair2:#3f4252;
-    --crimson:#beb2f0; --crimson2:#a797ea; --gold:#b3a7ef; --goldsoft:#3d3b56;
-    --center1:#21232c; --center2:#191b22;
-  }
-  body.dark.t2 .btn-main{background:#b3a7ef; color:#1c1931;}
-  body.dark.t2 .btn-main:not(:disabled):hover{background:#c6bcf5;}
-  /* Mocha ấm */
-  body.dark.t3{
-    --paper:#1a1512; --card:#251e19; --ink:#f1e7dd; --muted:#a8988a; --hair:#3c322a; --hair2:#4d4136;
-    --crimson:#eec2a8; --crimson2:#e4ad8c; --gold:#e2bb9b; --goldsoft:#544639;
-    --center1:#2a221c; --center2:#1f1915;
-  }
-  body.dark.t3 .btn-main{background:#e2bb9b; color:#34251b;}
-  body.dark.t3 .btn-main:not(:disabled):hover{background:#eeceb2;}
   body.dark .brand h1{color:var(--gold);}
   body.dark .ctitle h2{color:var(--gold);}
   body.dark #roundbar b{color:var(--gold);}
@@ -1562,15 +1546,11 @@ function showHof(){
 }
 
 /* ================= THEME ================= */
-const THEMES=[["light","Light"],["navy","Dark Navy"],["graphite","Dark Than chì"],["mocha","Dark Mocha"]];
+const THEMES=[["light","Light"],["navy","Dark Navy"]];
 function applyTheme(t){
   if(!THEMES.some(x=>x[0]===t)) t = t==="dark" ? "navy" : "light";
-  document.body.classList.remove("dark","t2","t3");
-  if(t!=="light"){
-    document.body.classList.add("dark");
-    if(t==="graphite") document.body.classList.add("t2");
-    if(t==="mocha") document.body.classList.add("t3");
-  }
+  document.body.classList.remove("dark");
+  if(t!=="light") document.body.classList.add("dark");
   const b=$("btn-theme"); if(b) b.textContent="Giao diện: "+THEMES.find(x=>x[0]===t)[1];
   try{localStorage.setItem("ctpw-theme", t);}catch(e){}
 }
