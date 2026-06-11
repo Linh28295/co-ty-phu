@@ -261,7 +261,7 @@
         <i>Ví dụ: dừng vào ô thuê gốc $240M giữa chuỗi 4 ô của đối thủ → $240M × 10 = $2.4B. Một bước chân, nửa gia tài.</i><br>
         Lưu ý: giá đất <b>xáo trộn quanh bàn</b> — Hong Kong, Monaco nằm ngay sau Khởi Hành, TP.HCM khiêm tốn ở cuối vòng. Đắt rẻ đan xen, không đoán trước được.</p>
         <p><b>🏠 Xây nhà:</b> tối đa 4 nhà/ô, cái thứ 5 thành khách sạn 🏨. <b>🆘 Kẹt tiền:</b> bán nhà (hồi 50%) hoặc cầm cố đất (nhận 50%, ô bị khoá 🔒 không thu được tiền thuê, chuộc lại 55%). Hết sạch vẫn nợ → <b>phá sản</b>.</p>
-        <p><b>⚡ Quyền lực hạ tầng (mới):</b> sở hữu <b>Lưới điện</b> hoặc <b>Nhà máy nước</b>, mỗi lượt bạn được chỉnh phí 1 lần: <b>🔺 Tăng phí</b> — mọi người chơi khác trả ngay $250M/BĐS họ sở hữu vào túi bạn, thuê tại ô đó ×2 · <b>🔻 Giảm phí</b> — kích cầu, mọi người (kể cả bạn) nhận +$150M, thuê ô đó ÷2. Sở hữu cả 2 hạ tầng = hiệu ứng ×2. Một mình thao túng cả nền kinh tế.</p>
+        <p><b>⚡ Quyền lực hạ tầng (mới):</b> sở hữu <b>Lưới điện</b> hoặc <b>Nhà máy nước</b>, mỗi lượt bạn được chỉnh phí 1 lần: <b>🔺 Tăng phí</b> — mọi người chơi khác trả ngay $250M/BĐS họ sở hữu vào túi bạn, thuê tại ô đó ×2 · <b>🔻 Giảm phí</b> — kích cầu, mọi người (kể cả bạn) nhận +$150M, thuê ô đó ÷2. Sở hữu cả 2 hạ tầng = hiệu ứng ×2.<br><b>⚠️ Nhưng quyền lực có giá:</b> mỗi người chỉ phải trả tối đa <b>$600M/lần sốc phí</b>; tăng phí xong phải <b>chờ 2 vòng</b> mới được tăng tiếp; và mỗi lần tăng có <b>35% bị 🚨 Cảnh sát kinh tế sờ gáy</b> — nộp phạt 1.5× số tiền vừa thu, phí về mức chuẩn. <b>Tái phạm lần 2:</b> tịch thu hạ tầng + tống vào tù. Thao túng thì được, nhưng đừng tham.</p>
         <p><b>🚔 Tù:</b> trả $500M hoặc tung ra đôi — tối đa 3 lượt thử. <b>🌍 Biến động kinh tế:</b> mỗi 12 lượt thị trường "trở mặt" — ai cũng móc ví. Chế độ Khắc Nghiệt: lương $1.2B, phí bảo trì $150M/BĐS, thuế 12% tài sản, lãi cầm cố 4%/lượt.</p>
         <p><b>🌐 Chơi online:</b> một người "Tạo phòng" lấy mã 5 ký tự, bạn bè mở cùng file/link này trên máy họ, chọn "Vào phòng" và nhập mã. <b>💾</b> Ván offline tự lưu; xúc xắc đã chỉnh để ra đôi hiếm hơn.</p>
       </details>
@@ -498,7 +498,7 @@ function sendTo(pid,m){const c=NET.conns.find(x=>x.pid===pid); if(c){try{c.conn.
 function snapMsg(){
   return {t:"state",
     ce:C.map(c=>({o:c.owner,h:c.houses,m:c.mortgaged,tr:c.tariff})),
-    pl:P.map(p=>({id:p.id,name:p.name,kind:p.kind,ava:p.ava,color:p.color,cash:p.cash,pos:p.pos,alive:p.alive,inJail:p.inJail,tu:!!p.tariffUsed})),
+    pl:P.map(p=>({id:p.id,name:p.name,kind:p.kind,ava:p.ava,color:p.color,cash:p.cash,pos:p.pos,alive:p.alive,inJail:p.inJail,tu:!!p.tariffUsed,ls:p.lastSurge,of:p.offenses})),
     cur, turnCount, buildSurcharge, cfg, lastRoll, d:lastD, logs:LOGS.slice(0,50), tb:($("turnbar")?$("turnbar").innerHTML:"")};
 }
 function remoteAsk(pid, title, body, buttons){
@@ -682,7 +682,7 @@ function saveGame(){
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       v:6, cur, lastRoll, turnCount, buildSurcharge, cfg,
-      pl:P.map(p=>({n:p.name,k:p.kind,av:p.ava,co:p.color,c:p.cash,o:p.pos,a:p.alive,j:p.inJail,t:p.jailTurns})),
+      pl:P.map(p=>({n:p.name,k:p.kind,av:p.ava,co:p.color,c:p.cash,o:p.pos,a:p.alive,j:p.inJail,t:p.jailTurns,ls:p.lastSurge,of:p.offenses})),
       ce:C.map(c=>({o:c.owner,h:c.houses,m:c.mortgaged,tr:c.tariff})),
     }));
   }catch(e){}
@@ -692,7 +692,7 @@ function loadGame(){
     const s=JSON.parse(localStorage.getItem(SAVE_KEY));
     if(!s||s.v!==6) return false;
     cur=s.cur; lastRoll=s.lastRoll; turnCount=s.turnCount||0; buildSurcharge=s.buildSurcharge||0; cfg=s.cfg||cfg;
-    P=s.pl.map((q,i)=>({id:i,name:q.n,kind:q.k==="remote"?"ai":q.k,ava:q.av,color:q.co,cash:q.c,pos:q.o,alive:q.a,inJail:q.j,jailTurns:q.t}));
+    P=s.pl.map((q,i)=>({id:i,name:q.n,kind:q.k==="remote"?"ai":q.k,ava:q.av,color:q.co,cash:q.c,pos:q.o,alive:q.a,inJail:q.j,jailTurns:q.t,lastSurge:q.ls,offenses:q.of}));
     s.ce.forEach((q,i)=>{Object.assign(C[i],{owner:q.o,houses:q.h,mortgaged:q.m,tariff:q.tr||1});});
     return true;
   }catch(e){return false;}
@@ -1040,7 +1040,8 @@ function manageActions(p,c){
   if(c.houses===0&&!c.mortgaged) acts.push({a:"mort", label:`Cầm cố +${fmt(c.p/2)}`});
   if(c.mortgaged) acts.push({a:"redeem", label:`Chuộc −${fmt(Math.ceil(c.p*0.55))}`, dis:p.cash<Math.ceil(c.p*0.55)});
   if(c.t==="util"&&!c.mortgaged){
-    acts.push({a:"tarup", label:"🔺 Tăng phí", dis:!!p.tariffUsed, cls:"btn-main"});
+    const cd=(p.lastSurge!==undefined)?Math.max(0, 2*P.length-(turnCount-p.lastSurge)):0;
+    acts.push({a:"tarup", label:cd>0?`🔺 Chờ ${cd} lượt`:"🔺 Tăng phí", dis:!!p.tariffUsed||cd>0, cls:"btn-main"});
     acts.push({a:"tardown", label:"🔻 Giảm phí", dis:!!p.tariffUsed});
   }
   return acts;
@@ -1051,15 +1052,40 @@ async function applyManage(p, a, ci){
     p.tariffUsed=true;
     const k=countType(p,"util")===2?2:1;
     if(a==="tarup"){
+      const cd=(p.lastSurge!==undefined)?Math.max(0, 2*P.length-(turnCount-p.lastSurge)):0;
+      if(cd>0){p.tariffUsed=false; return;}
+      p.lastSurge=turnCount;
       c.tariff=2;
-      const title="🔺 SỐC PHÍ HẠ TẦNG", body=`<b>${p.name}</b> tăng phí <b>${c.n}</b>${k===2?" (độc quyền hạ tầng ×2)":""}!<br>Mọi người chơi khác trả <b>${fmt(25*k)}/BĐS sở hữu</b> cho ${p.name}. Thuê tại ô này ×2.`;
-      log(`🔺 <b>${p.name} tăng phí ${c.n}!</b> Người chơi khác trả ${fmt(25*k)}/BĐS${k===2?" (độc quyền ×2)":""}. Thuê ô này ×2.`,"evt");
+      const title="🔺 SỐC PHÍ HẠ TẦNG", body=`<b>${p.name}</b> tăng phí <b>${c.n}</b>${k===2?" (độc quyền hạ tầng ×2)":""}!<br>Mọi người chơi khác trả <b>${fmt(25*k)}/BĐS sở hữu</b> (tối đa ${fmt(60)}/người) cho ${p.name}. Thuê tại ô này ×2.`;
+      log(`🔺 <b>${p.name} tăng phí ${c.n}!</b> Người chơi khác trả ${fmt(25*k)}/BĐS${k===2?" (độc quyền ×2)":""}, trần ${fmt(60)}/người. Thuê ô này ×2.`,"evt");
       sfx.alert(); bcast({t:"notice", title, body});
+      let collected=0;
       for(const q of alive()){
         if(q===p) continue;
         const n=C.filter(x=>x.owner===q.id).length;
-        if(n) await pay(q, 25*k*n, p);
+        if(n){const amt=Math.min(25*k*n, 60); collected+=Math.min(amt,q.cash+netWorth(q)); await pay(q, amt, p);}
         if(gameOver) break;
+      }
+      if(!gameOver && p.alive && Math.random()<0.35){
+        const fine=Math.ceil(Math.max(collected,20)*1.5);
+        p.offenses=(p.offenses||0)+1;
+        c.tariff=1;
+        sfx.jail();
+        const ptitle="🚨 CẢNH SÁT KINH TẾ VÀO CUỘC";
+        if(p.offenses>=2){
+          const pbody=`<b>${p.name}</b> thao túng giá lần thứ ${p.offenses} — nộp phạt <b>${fmt(fine)}</b>, <b>${c.n} bị tịch thu</b> về ngân hàng, và bị tống vào tù!`;
+          log(`🚨 <b>Cảnh sát kinh tế bắt ${p.name} (tái phạm)!</b> Phạt ${fmt(fine)}, tịch thu ${c.n}, vào tù.`, true);
+          bcast({t:"notice", title:ptitle, body:pbody});
+          await pay(p,fine,null);
+          c.owner=null; c.tariff=1;
+          if(p.alive){ sendToJail(p); if(!isAIp(p)) await noticeTo(p, ptitle, pbody); }
+        }else{
+          const pbody=`<b>${p.name}</b> bị điều tra thao túng giá — nộp phạt <b>${fmt(fine)}</b> (1.5× số vừa thu), phí ${c.n} về mức chuẩn. Tái phạm sẽ bị tịch thu hạ tầng + vào tù.`;
+          log(`🚨 <b>Cảnh sát kinh tế sờ gáy ${p.name}!</b> Phạt ${fmt(fine)}, phí ${c.n} về chuẩn.`, true);
+          bcast({t:"notice", title:ptitle, body:pbody});
+          await pay(p,fine,null);
+          if(p.alive && !isAIp(p)) await noticeTo(p, ptitle, pbody);
+        }
       }
     }else{
       c.tariff=0.5;
@@ -1226,7 +1252,7 @@ function nextPlayer(){
 function applyState(s){
   s.ce.forEach((q,i)=>{Object.assign(C[i],{owner:q.o,houses:q.h,mortgaged:q.m,tariff:q.tr||1});});
   const rebuild = P.length!==s.pl.length;
-  P=s.pl.map(q=>({id:q.id,name:q.name,kind:q.kind,ava:q.ava,color:q.color,cash:q.cash,pos:q.pos,alive:q.alive,inJail:q.inJail,jailTurns:0,tariffUsed:q.tu}));
+  P=s.pl.map(q=>({id:q.id,name:q.name,kind:q.kind,ava:q.ava,color:q.color,cash:q.cash,pos:q.pos,alive:q.alive,inJail:q.inJail,jailTurns:0,tariffUsed:q.tu,lastSurge:q.ls,offenses:q.of}));
   cur=s.cur; turnCount=s.turnCount; buildSurcharge=s.buildSurcharge; cfg=s.cfg; lastRoll=s.lastRoll;
   LOGS=s.logs||[]; renderLogs();
   if(s.d){lastD=s.d; dieFace($("d1"),s.d[0]); dieFace($("d2"),s.d[1]);}
