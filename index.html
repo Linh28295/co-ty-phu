@@ -252,7 +252,7 @@
         ① Bấm <b>"Tung xúc xắc"</b> — quân tự chạy.<br>
         ② Dừng ở đâu xử lý ở đó: <b>đất trống</b> → được mua · <b>đất người khác</b> → trả thuê, sau đó có thể <b>⚔️ Chiếm đất</b> · <b>ô ❓/🎁</b> → bốc thẻ.<br>
         ③ Trước khi hết lượt: <b>Xây nhà</b>, <b>Cầm cố</b> (bảng bên phải) hoặc <b>🤝 Giao dịch</b>.<br>
-        ④ Bấm <b>"Kết thúc lượt"</b>. Tung đôi → đi thêm lượt (3 đôi = vào tù 🚔).</p>
+        ④ Bấm <b>"Kết thúc lượt"</b>. Tung ra đôi (2 xúc xắc cùng số) → được đi thêm lượt; 3 lần đôi liên tiếp = vào tù 🚔.</p>
         <p><b>⚔️ Chiếm đất (mới):</b> đứng trên đất chưa xây nhà của đối thủ, bạn có thể trả <b>1.5× giá gốc</b> để cướp. Tung 1 xúc xắc: <b>4–6 = đất về tay bạn</b> (tiền vào túi chủ cũ) · 1–3 = mất nửa tiền mà trắng tay. Canh bạc thật sự.</p>
         <p><b>💰 Tiền thuê — càng gom càng đáng sợ:</b><br>
         · Đủ <b>nguyên khu màu</b> → thuê ×3 + được xây nhà.<br>
@@ -262,7 +262,7 @@
         Lưu ý: giá đất <b>xáo trộn quanh bàn</b> — Hong Kong, Monaco nằm ngay sau Khởi Hành, TP.HCM khiêm tốn ở cuối vòng. Đắt rẻ đan xen, không đoán trước được.</p>
         <p><b>🏠 Xây nhà:</b> tối đa 4 nhà/ô, cái thứ 5 thành khách sạn 🏨. <b>🆘 Kẹt tiền:</b> bán nhà (hồi 50%) hoặc cầm cố đất (nhận 50%, ô bị khoá 🔒 không thu được tiền thuê, chuộc lại 55%). Hết sạch vẫn nợ → <b>phá sản</b>.</p>
         <p><b>⚡ Quyền lực hạ tầng (mới):</b> sở hữu <b>Lưới điện</b> hoặc <b>Nhà máy nước</b>, mỗi lượt bạn được chỉnh phí 1 lần: <b>🔺 Tăng phí</b> — mọi người chơi khác trả ngay $250M/BĐS họ sở hữu vào túi bạn, thuê tại ô đó ×2 · <b>🔻 Giảm phí</b> — kích cầu, mọi người (kể cả bạn) nhận +$150M, thuê ô đó ÷2. Sở hữu cả 2 hạ tầng = hiệu ứng ×2. Một mình thao túng cả nền kinh tế.</p>
-        <p><b>🚔 Tù:</b> trả $500M hoặc tung đôi (3 lượt thử). <b>🌍 Biến động kinh tế:</b> mỗi 12 lượt thị trường "trở mặt" — ai cũng móc ví. Chế độ Khắc Nghiệt: lương $1.2B, phí bảo trì $150M/BĐS, thuế 12% tài sản, lãi cầm cố 4%/lượt.</p>
+        <p><b>🚔 Tù:</b> trả $500M hoặc tung ra đôi — tối đa 3 lượt thử. <b>🌍 Biến động kinh tế:</b> mỗi 12 lượt thị trường "trở mặt" — ai cũng móc ví. Chế độ Khắc Nghiệt: lương $1.2B, phí bảo trì $150M/BĐS, thuế 12% tài sản, lãi cầm cố 4%/lượt.</p>
         <p><b>🌐 Chơi online:</b> một người "Tạo phòng" lấy mã 5 ký tự, bạn bè mở cùng file/link này trên máy họ, chọn "Vào phòng" và nhập mã. <b>💾</b> Ván offline tự lưu; xúc xắc đã chỉnh để ra đôi hiếm hơn.</p>
       </details>
     </div>
@@ -1119,11 +1119,11 @@ async function handleJail(p){
       return "roll";
     }
     const [a,b]=await animateRoll();
-    if(a===b){p.inJail=false; log(`${p.name} tung đôi ${a}-${b}, ra tù!`); await stepMove(p,a+b); return "moved";}
+    if(a===b){p.inJail=false; log(`${p.name} tung ra đôi ${a}-${b} — ra tù!`); await stepMove(p,a+b); return "moved";}
     log(`${p.name} không tung được đôi, ở lại tù.`);
     return false;
   }
-  const opts=[{label:"Tung xúc xắc (cần đôi)",val:"roll",cls:"btn-sec"}];
+  const opts=[{label:"Tung xúc xắc (cần ra đôi)",val:"roll",cls:"btn-sec"}];
   if(p.cash>=50) opts.unshift({label:`Trả ${fmt(50)} ra tù`,val:"pay"});
   const ans=await decide(p, `🚔 ${p.name} đang trong tù`, `Lượt thứ ${p.jailTurns}/3 trong tù.${p.jailTurns>=3?`<br><b>Lượt cuối: nếu không tung được đôi, buộc phải trả ${fmt(50)}.</b>`:""}`, opts);
   if(ans==="pay"){
@@ -1132,7 +1132,7 @@ async function handleJail(p){
     return "roll";
   }
   const [a,b]=await animateRoll();
-  if(a===b){p.inJail=false; log(`${p.name} tung đôi ${a}-${b}, ra tù!`,true); await stepMove(p,a+b); return "moved";}
+  if(a===b){p.inJail=false; log(`${p.name} tung ra đôi ${a}-${b} — ra tù!`,true); await stepMove(p,a+b); return "moved";}
   log(`Không phải đôi (${a}-${b}).`);
   if(p.jailTurns>=3){
     await noticeTo(p,"Hết hạn tù",`${p.name} phải trả ${fmt(50)} và đi theo xúc xắc vừa tung.`);
