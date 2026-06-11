@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cờ Tỷ Phú Thế Giới 🌍</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif:wght@600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
+<style>
+  :root{
+    --paper:#fbf9f4; --card:#ffffff; --ink:#29231b; --muted:#8d8474; --hair:#e7e0d1; --hair2:#d9d0bc;
+    --crimson:#8B0000; --crimson2:#690707; --gold:#b49a5e; --goldsoft:#cdbf9c;
+    --good:#1a6b54; --bad:#a8352c;
+    --cellbg:#fffefb; --cellink:#29231b; --center1:#fbf8f0; --center2:#f3eddd;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    height:100vh; overflow:hidden; display:flex; flex-direction:column; padding:12px 18px 14px;
+  }
+  .serif, h1, h2{font-family:'Noto Serif',Georgia,'Times New Roman',serif;}
+  .topbar{flex:none; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--hair);}
+  .brand{display:flex; align-items:center; gap:14px;}
+  .brand .logo{width:auto; height:auto; background:none; border:none; box-shadow:none; color:var(--crimson); font-size:26px; line-height:1;}
+  .brand h1{font-size:21px; font-weight:700; letter-spacing:.5px; color:var(--crimson); line-height:1.35;}
+  .brand small{display:block; font-family:'Be Vietnam Pro',sans-serif; font-size:9.5px; font-weight:600; color:var(--muted); letter-spacing:2.5px; text-transform:uppercase; margin-top:2px;}
+  .topbtns{display:flex; gap:8px; flex-wrap:wrap;}
+
+  .wrap{flex:1; min-height:0; display:flex; gap:18px; align-items:stretch;}
+
+  .board-holder{flex:none; height:100%; display:flex; align-items:center;}
+  #board{
+    position:relative;
+    display:grid; aspect-ratio:1/1; height:min(100%, calc(100vw - 370px));
+    grid-template-columns:1.55fr repeat(9,1fr) 1.55fr;
+    grid-template-rows:1.55fr repeat(9,1fr) 1.55fr;
+    gap:1.5px; padding:5px;
+    background:var(--hair2);
+    border:1.5px solid var(--gold);
+    border-radius:4px;
+    box-shadow:0 0 0 6px var(--card), 0 0 0 7px var(--crimson), 0 22px 50px rgba(80,60,30,.14);
+  }
+  .cell{
+    position:relative; background:var(--cellbg); color:var(--cellink); border-radius:2px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    overflow:hidden; gap:.2vh; border:1px solid rgba(160,140,100,.12);
+  }
+  .cell .nm{font-weight:600; text-align:center; line-height:1.4; font-size:clamp(7.5px,1.05vh,11px); padding:1px 2px 0; letter-spacing:0;}
+  .cell .pr{color:#94896f; font-size:clamp(7px,.9vh,9.5px); font-weight:600;}
+  .cell .ico{font-size:clamp(13px,2vh,23px); line-height:1;}
+  .bar{position:absolute; z-index:1;}
+  .bar-b{top:0; left:0; right:0; height:16%;}
+  .bar-t{bottom:0; left:0; right:0; height:16%;}
+  .bar-l{right:0; top:0; bottom:0; width:16%;}
+  .bar-r{left:0; top:0; bottom:0; width:16%;}
+  .cell.side-b{padding-top:17%;}
+  .cell.side-t{padding-bottom:17%;}
+  .cell.side-l{padding-right:17%;}
+  .cell.side-r{padding-left:17%;}
+  .hs{position:absolute; z-index:2; font-size:clamp(7.5px,1vh,10px); line-height:1; letter-spacing:-1px;}
+  .side-b .hs{top:2%; left:50%; transform:translateX(-50%);}
+  .side-t .hs{bottom:2%; left:50%; transform:translateX(-50%);}
+  .side-l .hs{right:1%; top:50%; transform:translateY(-50%) rotate(90deg);}
+  .side-r .hs{left:1%; top:50%; transform:translateY(-50%) rotate(-90deg);}
+  .cell.corner{
+    background:linear-gradient(160deg,#faf6ea,#f1e9d4);
+    font-weight:700; font-size:clamp(8px,1.05vh,11px); text-align:center; color:var(--crimson); padding:4px; gap:.4vh;
+  }
+  .cell.corner .ico{font-size:clamp(19px,3.2vh,36px);}
+  .cell.owned-ring{box-shadow:inset 0 0 0 2px var(--oc);}
+  .cell.mort{filter:grayscale(.85) opacity(.85);}
+  .cell.mort::after{content:"🔒"; position:absolute; font-size:clamp(9px,1.3vh,12px); right:2px; bottom:2px; z-index:3;}
+  .cell.flash{animation:fl .7s;}
+  @keyframes fl{0%{background:#f3e2b9;}100%{background:var(--cellbg);}}
+
+  .token{
+    position:absolute; z-index:10; width:min(3.2vh,28px); height:min(3.2vh,28px); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:min(1.8vh,15px);
+    border:2px solid #fff; box-shadow:0 2px 8px rgba(40,30,15,.4);
+    transition:left .18s ease, top .18s ease; pointer-events:none;
+  }
+  .token.me{width:min(3.7vh,32px); height:min(3.7vh,32px); font-size:min(2.1vh,18px); z-index:11;}
+
+  #center{grid-row:2/11; grid-column:2/11; position:relative; z-index:5; display:flex; flex-direction:column; padding:1.6vh 1.8vh 1.2vh; gap:.8vh;
+    background:radial-gradient(closest-side at 50% 40%, var(--center1) 0%, var(--center2) 100%);
+    border:1px solid var(--hair);
+    box-shadow:inset 0 0 0 4px var(--center1), inset 0 0 0 5px var(--goldsoft);
+  }
+  #center::before{content:"❖"; position:absolute; top:4.2%; left:0; right:0; text-align:center; font-size:clamp(9px,1.4vh,14px); color:var(--gold); opacity:.7; pointer-events:none;}
+  #center::after{content:"WORLD"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif',Georgia,serif; font-size:clamp(38px,8vh,92px); font-weight:700; color:rgba(139,0,0,.045); letter-spacing:14px; pointer-events:none;}
+  .ctitle{text-align:center; margin-top:1.8vh;}
+  .ctitle h2{font-size:clamp(16px,2.8vh,28px); font-weight:700; color:var(--crimson); letter-spacing:1px; line-height:1.4;}
+  .ctitle small{display:inline-block; color:var(--muted); font-size:clamp(8px,1.15vh,11px); letter-spacing:3.5px; font-weight:600; border-top:1px solid var(--goldsoft); padding-top:.5vh; margin-top:.3vh;}
+  #roundbar{text-align:center; font-size:clamp(9px,1.3vh,12px); color:var(--muted); font-weight:500; min-height:1.5vh;}
+  #roundbar b{color:var(--crimson); font-weight:700;}
+  #dicebox{display:flex; gap:1.6vh; justify-content:center; align-items:center; min-height:6.5vh;}
+  .die{position:relative; width:min(6vh,56px); height:min(6vh,56px); background:#fff; border-radius:1vh;
+    border:1px solid var(--hair2); box-shadow:0 4px 14px rgba(60,45,20,.15);}
+  .die .pip{position:absolute; width:17%; height:17%; border-radius:50%; background:var(--crimson); transform:translate(-50%,-50%);}
+  .die.rolling{animation:shk .4s ease;}
+  @keyframes shk{0%{transform:rotate(0) translateY(0);}25%{transform:rotate(-14deg) translateY(-7px);}50%{transform:rotate(11deg) translateY(-3px);}75%{transform:rotate(-7deg) translateY(-5px);}100%{transform:rotate(0);}}
+  #turnbar{text-align:center; font-size:clamp(11px,1.65vh,15px); font-weight:600; min-height:2vh; color:var(--ink);}
+  #controls{display:flex; gap:.9vh; justify-content:center; flex-wrap:wrap;}
+  button{font-family:inherit; font-size:clamp(10px,1.45vh,12.5px); font-weight:600; padding:1vh 2.1vh; border-radius:2px; border:none; cursor:pointer; transition:background .15s, color .15s, transform .08s; letter-spacing:1.5px; text-transform:uppercase;}
+  button:disabled{opacity:.3; cursor:not-allowed;}
+  button:not(:disabled):hover{transform:translateY(-1px);}
+  .btn-main{background:var(--crimson); color:#fdf9f0;}
+  .btn-main:not(:disabled):hover{background:var(--crimson2);}
+  .btn-sec{background:var(--card); color:var(--crimson); border:1px solid var(--crimson);}
+  .btn-sec:not(:disabled):hover{background:#f7eeea;}
+  .btn-ghost{background:var(--card); color:var(--ink); border:1px solid var(--hair); font-weight:500;}
+  #log{flex:1; overflow-y:auto; background:rgba(255,255,255,.65); border:1px solid var(--hair); border-radius:2px; padding:1vh 1.3vh; font-size:clamp(10px,1.4vh,12.5px); line-height:1.65; min-height:6vh;}
+  #log div{padding:2px 0; border-bottom:1px solid rgba(180,154,94,.12);}
+  #log .imp{color:var(--crimson); font-weight:700;}
+  #log .evt{color:#8a6210; font-weight:700;}
+
+  .side{flex:1; min-width:295px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding-right:3px;}
+  .panel{background:var(--card); border:1px solid var(--hair); border-radius:3px; padding:14px 16px; box-shadow:0 1px 3px rgba(60,45,20,.05);}
+  .panel h3{font-size:10px; text-transform:uppercase; letter-spacing:2.5px; color:var(--gold); margin-bottom:10px; display:flex; align-items:center; gap:10px; font-weight:700;}
+  .panel h3::after{content:""; flex:1; height:1px; background:var(--hair);}
+  .pcard{position:relative; display:flex; flex-direction:column; gap:4px; padding:10px 12px 9px 14px; border-radius:2px; border:1px solid var(--hair); margin-bottom:8px; background:var(--card); overflow:hidden;}
+  .pcard::before{content:""; position:absolute; left:0; top:0; bottom:0; width:2.5px; background:var(--pc);}
+  .pcard.active{border-color:var(--crimson); box-shadow:0 0 0 1px var(--crimson);}
+  .pcard.dead{opacity:.4; filter:grayscale(1);}
+  .pcard .row1{display:flex; align-items:center; gap:8px; font-weight:700; font-size:13.5px; color:var(--ink);}
+  .pcard .ava{width:28px; height:28px; border-radius:50%; background:var(--pc); display:flex; align-items:center; justify-content:center; font-size:14px; border:1.5px solid #fff; box-shadow:0 1px 4px rgba(40,30,15,.3); flex:none;}
+  .pcard .row2{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); flex-wrap:wrap; gap:2px;}
+  .pcard .row2 b{color:var(--crimson); font-size:12.5px;}
+  .pcard .props{display:flex; flex-wrap:wrap; gap:3px; margin-top:3px;}
+  .chip{font-size:9px; font-weight:600; padding:2.5px 7px; border-radius:2px; background:#f7f3e9; border:1px solid var(--hair); color:#6e6452; display:inline-flex; align-items:center; gap:3px;}
+  .chip .dot{width:7px; height:7px; border-radius:1.5px; display:inline-block;}
+  .chip.mch{opacity:.5; text-decoration:line-through;}
+  #managelist{display:flex; flex-direction:column; gap:7px; max-height:32vh; overflow-y:auto;}
+  .mrow{display:flex; justify-content:space-between; align-items:center; font-size:11.5px; gap:6px; padding:7px 9px; border-radius:2px; background:#faf7ef; border:1px solid var(--hair); color:var(--ink);}
+  .mrow .mbts{display:flex; gap:4px;}
+  .mrow button{padding:4px 9px; font-size:9px; letter-spacing:.8px;}
+  details summary{cursor:pointer; font-weight:700; font-size:12.5px; color:var(--crimson);}
+  details p{font-size:12px; margin-top:8px; line-height:1.75; color:var(--ink);}
+  details b{color:var(--crimson);}
+  details i{color:var(--muted);}
+
+  .fm{position:fixed; z-index:80; font-weight:800; font-size:14px; pointer-events:none; animation:fmup 1.15s ease-out forwards;}
+  @keyframes fmup{0%{transform:translateY(0); opacity:0;}15%{opacity:1;}100%{transform:translateY(-44px); opacity:0;}}
+  .fm.up{color:var(--good);} .fm.dn{color:var(--bad);}
+
+  .cf{position:fixed; top:-22px; z-index:120; animation:cfall linear forwards; font-size:18px;}
+  @keyframes cfall{to{transform:translateY(110vh) rotate(700deg);}}
+
+  #overlay{position:fixed; inset:0; background:rgba(45,36,22,.42); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:50;}
+  #overlay.show{display:flex;}
+  #modal{background:var(--card); color:var(--ink); border-radius:3px; padding:28px 30px; max-width:480px; width:94%; max-height:92vh; overflow-y:auto; text-align:center; border:1px solid var(--hair); border-top:2.5px solid var(--crimson); box-shadow:0 26px 70px rgba(50,38,18,.3); animation:pop .22s ease;}
+  @keyframes pop{0%{transform:scale(.94); opacity:0;}100%{transform:scale(1); opacity:1;}}
+  #modal h2{font-size:17px; margin-bottom:12px; color:var(--crimson); font-weight:700; letter-spacing:.5px; line-height:1.4;}
+  #modal .mbody{font-size:13.5px; line-height:1.7; margin-bottom:18px;}
+  #modal .mbtns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+  #modal select, #modal input[type=number], #modal input[type=text]{font-family:inherit; font-size:13px; padding:9px 11px; border-radius:2px; border:1px solid var(--hair2); width:100%; margin-top:8px; background:#fff; color:var(--ink);}
+  #modal select:focus, #modal input:focus{outline:1.5px solid var(--crimson);}
+  .setup-row{display:flex; gap:7px; margin-top:7px; align-items:center;}
+  .setup-row input[type=text]{margin-top:0 !important; flex:1;}
+  .setup-row select{margin-top:0 !important; width:128px !important; flex:none;}
+  .setup-row .sava{width:34px; height:34px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; flex:none; border:1.5px solid #fff; box-shadow:0 1px 4px rgba(40,30,15,.3); cursor:pointer; text-transform:none; letter-spacing:0; line-height:1;}
+  .setup-row .sava:not(:disabled):hover{transform:scale(1.12);}
+  .setup-opts{display:flex; gap:10px; margin-top:14px; align-items:center; justify-content:center; flex-wrap:wrap; font-size:12.5px;}
+  .harsh-box{background:#faf3ef; border:1px solid #e3c8bb; border-radius:3px; padding:11px 13px; margin-top:12px; font-size:12px; text-align:left; line-height:1.65;}
+  .roomcode{font-family:'Noto Serif',Georgia,serif; font-size:34px; font-weight:700; letter-spacing:10px; color:var(--crimson); background:#faf7ef; border:1px dashed var(--gold); border-radius:3px; padding:12px 6px; margin:12px 0;}
+  .deed{display:inline-block; text-align:left; background:#fff; color:#29231b; border:1px solid var(--hair2); border-radius:3px; overflow:hidden; min-width:230px; margin-bottom:6px;}
+  .deed .dh{padding:8px 12px; color:#fff; font-weight:700; text-align:center; font-size:13px; text-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .deed table{width:100%; font-size:11.5px; border-collapse:collapse;}
+  .deed td{padding:3.5px 12px;}
+  .deed td:last-child{text-align:right; font-weight:700;}
+  .deed tr:nth-child(odd){background:#f8f4e9;}
+  .lb-row{display:flex; align-items:center; gap:9px; padding:7px 11px; border-radius:2px; background:#faf7ef; border:1px solid var(--hair); margin-bottom:6px; font-size:13px; text-align:left;}
+  .lb-row b{margin-left:auto; color:var(--crimson);}
+
+  #tip{position:fixed; z-index:60; display:none; pointer-events:none; filter:drop-shadow(0 10px 24px rgba(50,38,18,.3));}
+
+  /* ============ DARK (onyx) ============ */
+  body.dark{
+    --paper:#161210; --card:#211c17; --ink:#ece3d2; --muted:#9c9180; --hair:#383027; --hair2:#473d31;
+    --gold:#c2a564; --goldsoft:#6e5d3a;
+    --center1:#241e18; --center2:#1b1612;
+  }
+  body.dark .brand h1{color:var(--gold);}
+  body.dark .ctitle h2{color:var(--gold);}
+  body.dark #roundbar b{color:var(--gold);}
+  body.dark #center::after{color:rgba(194,165,100,.06);}
+  body.dark #board{box-shadow:0 0 0 6px var(--card), 0 0 0 7px var(--gold), 0 24px 60px rgba(0,0,0,.6);}
+  body.dark .die{background:#f6efdd;}
+  body.dark #log{background:rgba(0,0,0,.25);}
+  body.dark #log .imp{color:var(--gold);}
+  body.dark .pcard .row2 b{color:var(--gold);}
+  body.dark .chip{background:rgba(255,255,255,.05); color:#cfc4ad;}
+  body.dark .mrow{background:rgba(255,255,255,.04);}
+  body.dark .lb-row{background:rgba(255,255,255,.04);}
+  body.dark .lb-row b{color:var(--gold);}
+  body.dark .btn-main{background:var(--crimson); color:#f5ead8;}
+  body.dark .btn-sec{background:transparent; color:var(--gold); border-color:var(--gold);}
+  body.dark .btn-sec:not(:disabled):hover{background:rgba(194,165,100,.1);}
+  body.dark .btn-ghost{background:transparent;}
+  body.dark #overlay{background:rgba(0,0,0,.6);}
+  body.dark #modal{border-top-color:var(--gold);}
+  body.dark #modal h2{color:var(--gold);}
+  body.dark #modal select, body.dark #modal input[type=number], body.dark #modal input[type=text]{background:#181410; color:var(--ink); border-color:var(--hair2);}
+  body.dark .harsh-box{background:rgba(192,57,43,.08); border-color:#5e4038;}
+  body.dark .roomcode{background:rgba(194,165,100,.06); color:var(--gold);}
+  body.dark details summary{color:var(--gold);}
+  body.dark details b{color:var(--gold);}
+  body.dark .panel h3{color:var(--gold);}
+  body.dark .pcard.active{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold);}
+  body.dark #log .evt{color:#d8a957;}
+
+  @media (max-width:980px){
+    body{height:auto; overflow:auto;}
+    .wrap{flex-direction:column;}
+    .board-holder{height:auto; width:100%;}
+    #board{height:auto; width:min(94vw, 94vh);}
+    .side{max-width:none; overflow:visible;}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <div class="logo serif">♛</div>
+    <h1>CỜ TỶ PHÚ THẾ GIỚI<small>WORLD EDITION · TỪ HỒ CHÍ MINH ĐẾN MONACO</small></h1>
+  </div>
+  <div class="topbtns">
+    <button id="btn-theme" class="btn-ghost">Dark mode</button>
+    <button id="btn-hof" class="btn-ghost">Bảng vàng</button>
+    <button id="btn-sound" class="btn-ghost">Âm thanh: Bật</button>
+    <button id="btn-speed" class="btn-ghost">Tốc độ: Thường</button>
+    <button id="btn-new" class="btn-ghost">Ván mới</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="board-holder"><div id="board"></div></div>
+  <div class="side">
+    <div class="panel"><h3>Người chơi</h3><div id="plist"></div></div>
+    <div class="panel" id="manage-panel" style="display:none">
+      <h3>Quản lý tài sản</h3>
+      <div id="managelist"></div>
+    </div>
+    <div class="panel">
+      <details>
+        <summary>📜 Cách chơi (đọc 2 phút là chiến được)</summary>
+        <p><b>🎯 Mục tiêu:</b> Là người <b>cuối cùng chưa phá sản</b>. Mua đất, thu tiền thuê, và ép đối thủ cạn ví.</p>
+        <p><b>🎲 Đến lượt bạn:</b><br>
+        ① Bấm <b>"Tung xúc xắc"</b> — quân tự chạy.<br>
+        ② Dừng ở đâu xử lý ở đó: <b>đất trống</b> → được mua · <b>đất người khác</b> → trả thuê, sau đó có thể <b>⚔️ Chiếm đất</b> · <b>ô ❓/🎁</b> → bốc thẻ.<br>
+        ③ Trước khi hết lượt: <b>Xây nhà</b>, <b>Cầm cố</b> (bảng bên phải) hoặc <b>🤝 Giao dịch</b>.<br>
+        ④ Bấm <b>"Kết thúc lượt"</b>. Tung đôi → đi thêm lượt (3 đôi = vào tù 🚔).</p>
+        <p><b>⚔️ Chiếm đất (mới):</b> đứng trên đất chưa xây nhà của đối thủ, bạn có thể trả <b>1.5× giá gốc</b> để cướp. Tung 1 xúc xắc: <b>4–6 = đất về tay bạn</b> (tiền vào túi chủ cũ) · 1–3 = mất nửa tiền mà trắng tay. Canh bạc thật sự.</p>
+        <p><b>💰 Tiền thuê — càng gom càng đáng sợ:</b><br>
+        · Đủ <b>nguyên khu màu</b> → thuê ×3 + được xây nhà.<br>
+        · Các ô <b>sát nhau</b> (không cần cùng màu): 2 ô <b>×2</b> · 3 ô <b>×4</b> · 4 ô <b>×10</b> · 5 ô <b>×30</b> · 6+ ô <b>×100</b>.<br>
+        · Ôm nhiều khu: 2 khu → mọi thuê ×1.5 · 3 khu ×2 · 4 khu ×2.5.<br>
+        <i>Ví dụ: dừng vào ô thuê gốc $240M giữa chuỗi 4 ô của đối thủ → $240M × 10 = $2.4B. Một bước chân, nửa gia tài.</i><br>
+        Lưu ý: giá đất <b>xáo trộn quanh bàn</b> — Hong Kong, Monaco nằm ngay sau Khởi Hành, TP.HCM khiêm tốn ở cuối vòng. Đắt rẻ đan xen, không đoán trước được.</p>
+        <p><b>🏠 Xây nhà:</b> tối đa 4 nhà/ô, cái thứ 5 thành khách sạn 🏨. <b>🆘 Kẹt tiền:</b> bán nhà (hồi 50%) hoặc cầm cố đất (nhận 50%, ô bị khoá 🔒 không thu được tiền thuê, chuộc lại 55%). Hết sạch vẫn nợ → <b>phá sản</b>.</p>
+        <p><b>⚡ Quyền lực hạ tầng (mới):</b> sở hữu <b>Lưới điện</b> hoặc <b>Nhà máy nước</b>, mỗi lượt bạn được chỉnh phí 1 lần: <b>🔺 Tăng phí</b> — mọi người chơi khác trả ngay $250M/BĐS họ sở hữu vào túi bạn, thuê tại ô đó ×2 · <b>🔻 Giảm phí</b> — kích cầu, mọi người (kể cả bạn) nhận +$150M, thuê ô đó ÷2. Sở hữu cả 2 hạ tầng = hiệu ứng ×2. Một mình thao túng cả nền kinh tế.</p>
+        <p><b>🚔 Tù:</b> trả $500M hoặc tung đôi (3 lượt thử). <b>🌍 Biến động kinh tế:</b> mỗi 12 lượt thị trường "trở mặt" — ai cũng móc ví. Chế độ Khắc Nghiệt: lương $1.2B, phí bảo trì $150M/BĐS, thuế 12% tài sản, lãi cầm cố 4%/lượt.</p>
+        <p><b>🌐 Chơi online:</b> một người "Tạo phòng" lấy mã 5 ký tự, bạn bè mở cùng file/link này trên máy họ, chọn "Vào phòng" và nhập mã. <b>💾</b> Ván offline tự lưu; xúc xắc đã chỉnh để ra đôi hiếm hơn.</p>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div id="overlay"><div id="modal"><h2 id="mtitle"></h2><div class="mbody" id="mbody"></div><div class="mbtns" id="mbtns"></div></div></div>
+<div id="tip"></div>
+
+<script>
+"use strict";
+/* ================= DATA ================= */
+const GROUPS = {
+  dblue:{color:"#4d96ff", name:"Xanh đậm", hc:200},
+  orange:{color:"#ffa53e", name:"Cam", hc:100},
+  lblue:{color:"#5ec8f2", name:"Xanh nhạt", hc:50},
+  green:{color:"#6bcb77", name:"Xanh lá", hc:200},
+  pink:{color:"#ff7ab0", name:"Hồng", hc:100},
+  yellow:{color:"#ffd93d", name:"Vàng", hc:150},
+  red:{color:"#ff5757", name:"Đỏ", hc:150},
+  brown:{color:"#b5835a", name:"Nâu", hc:50},
+};
+const C = [
+  {t:"go",    n:"KHỞI HÀNH", ico:"🚀"},
+  {t:"prop",  n:"Hong Kong", g:"dblue", p:350, r:[35,175,500,1100,1300,1500], ico:"🥟"},
+  {t:"chest", n:"Vận Mệnh", ico:"🎁"},
+  {t:"prop",  n:"Monaco", g:"dblue", p:400, r:[50,200,600,1400,1700,2000], ico:"🛥️"},
+  {t:"tax",   n:"Thuế thu nhập", p:200, ico:"🧾"},
+  {t:"rail",  n:"SB Changi", p:200, ico:"✈️"},
+  {t:"prop",  n:"Seoul", g:"orange", p:180, r:[14,70,200,550,750,950], ico:"🎤"},
+  {t:"chance",n:"Cơ Hội", ico:"❓"},
+  {t:"prop",  n:"Berlin", g:"orange", p:180, r:[14,70,200,550,750,950], ico:"🍺"},
+  {t:"prop",  n:"Toronto", g:"orange", p:200, r:[16,80,220,600,800,1000], ico:"🍁"},
+  {t:"jail",  n:"NHÀ TẠM GIAM", ico:"🚔"},
+  {t:"prop",  n:"Jakarta", g:"lblue", p:100, r:[6,30,90,270,400,550], ico:"🌋"},
+  {t:"util",  n:"Lưới điện toàn cầu", p:150, ico:"⚡"},
+  {t:"prop",  n:"Manila", g:"lblue", p:100, r:[6,30,90,270,400,550], ico:"🌴"},
+  {t:"prop",  n:"Mumbai", g:"lblue", p:120, r:[8,40,100,300,450,600], ico:"🛕"},
+  {t:"rail",  n:"SB Heathrow", p:200, ico:"✈️"},
+  {t:"prop",  n:"London", g:"green", p:300, r:[26,130,390,900,1100,1275], ico:"🎡"},
+  {t:"chest", n:"Vận Mệnh", ico:"🎁"},
+  {t:"prop",  n:"Tokyo", g:"green", p:300, r:[26,130,390,900,1100,1275], ico:"🗼"},
+  {t:"prop",  n:"New York", g:"green", p:320, r:[28,150,450,1000,1200,1400], ico:"🗽"},
+  {t:"park",  n:"BÃI ĐẬU XE", ico:"🅿️"},
+  {t:"prop",  n:"Cairo", g:"pink", p:140, r:[10,50,150,450,625,750], ico:"🐪"},
+  {t:"chance",n:"Cơ Hội", ico:"❓"},
+  {t:"prop",  n:"Istanbul", g:"pink", p:140, r:[10,50,150,450,625,750], ico:"🕌"},
+  {t:"prop",  n:"Rio de Janeiro", g:"pink", p:160, r:[12,60,180,500,700,900], ico:"🎭"},
+  {t:"rail",  n:"SB Haneda", p:200, ico:"✈️"},
+  {t:"prop",  n:"Singapore", g:"yellow", p:260, r:[22,110,330,800,975,1150], ico:"🦁"},
+  {t:"prop",  n:"Zurich", g:"yellow", p:260, r:[22,110,330,800,975,1150], ico:"🏦"},
+  {t:"util",  n:"Nhà máy nước sạch", p:150, ico:"🚰"},
+  {t:"prop",  n:"Paris", g:"yellow", p:280, r:[24,120,360,850,1025,1200], ico:"🥐"},
+  {t:"gotojail", n:"VÀO TÙ", ico:"👮"},
+  {t:"prop",  n:"Thượng Hải", g:"red", p:220, r:[18,90,250,700,875,1050], ico:"🏮"},
+  {t:"prop",  n:"Dubai", g:"red", p:220, r:[18,90,250,700,875,1050], ico:"🏜️"},
+  {t:"chest", n:"Vận Mệnh", ico:"🎁"},
+  {t:"prop",  n:"Sydney", g:"red", p:240, r:[20,100,300,750,925,1100], ico:"🦘"},
+  {t:"rail",  n:"SB JFK", p:200, ico:"✈️"},
+  {t:"chance",n:"Cơ Hội", ico:"❓"},
+  {t:"prop",  n:"TP. Hồ Chí Minh", g:"brown", p:60, r:[2,10,30,90,160,250], ico:"🛵"},
+  {t:"tax",   n:"Thuế xa xỉ", p:100, ico:"💎"},
+  {t:"prop",  n:"Bangkok", g:"brown", p:60, r:[4,20,60,180,320,450], ico:"🛺"},
+];
+C.forEach((c,i)=>{c.i=i; c.owner=null; c.houses=0; c.mortgaged=false; c.tariff=1;});
+
+const SC=10, UNIT="triệu $";
+const num=n=>Math.round(n*SC).toLocaleString("en-US");
+function nf(n){const v=Math.round(n*SC); return v>=1000 ? (v/1000).toLocaleString("en-US",{maximumFractionDigits:1})+"B" : v.toLocaleString("en-US")+"M";}
+const fmt=n=>"$"+nf(n);
+
+const CHANCE = [
+  {x:"Tiến thẳng đến Khởi Hành.", f:p=>moveTo(p,0,true)},
+  {x:"Bay đến Monaco 🛥️.", f:p=>moveTo(p,3,true)},
+  {x:"Bay đến Dubai 🏜️. Nếu qua Khởi Hành nhận lương.", f:p=>moveTo(p,32,true)},
+  {x:"Cổ tức quỹ đầu tư: +$500M.", f:p=>gain(p,50)},
+  {x:"Phạt vi phạm giao thông: −$150M.", f:p=>pay(p,15,null)},
+  {x:"Bị thanh tra quốc tế — vào tù ngay!", f:p=>sendToJail(p)},
+  {x:"Sửa chữa bất động sản: trả $250M/nhà, $1B/khách sạn.", f:p=>{let s=0;C.forEach(c=>{if(c.owner===p.id){s+=c.houses===5?100:c.houses*25;}});return pay(p,s,null);}},
+  {x:"Bay đến SB Changi.", f:p=>moveTo(p,5,true)},
+  {x:"Lùi lại 3 ô.", f:p=>moveTo(p,(p.pos+37)%40,false)},
+  {x:"Thắng giải chiến lược gia toàn cầu: +$1B.", f:p=>gain(p,100)},
+];
+const CHEST = [
+  {x:"Hoàn thuế: +$200M.", f:p=>gain(p,20)},
+  {x:"Bảo hiểm nhân thọ đáo hạn: +$1B.", f:p=>gain(p,100)},
+  {x:"Viện phí: −$500M.", f:p=>pay(p,50,null)},
+  {x:"Đóng học phí MBA: −$500M.", f:p=>pay(p,50,null)},
+  {x:"Về Khởi Hành, nhận lương.", f:p=>moveTo(p,0,true)},
+  {x:"Nhận thừa kế: +$1B.", f:p=>gain(p,100)},
+  {x:"Sinh nhật! 🎂 Mỗi người chơi tặng bạn $100M.", f:async p=>{for(const q of P){if(q!==p&&q.alive){await pay(q,10,p);}}}},
+  {x:"Trốn thuế bị phát hiện — vào tù!", f:p=>sendToJail(p)},
+  {x:"Thanh lý du thuyền cũ: +$450M.", f:p=>gain(p,45)},
+  {x:"Phí dịch vụ ngân hàng: −$250M.", f:p=>pay(p,25,null)},
+];
+
+/* ================= STATE ================= */
+const AVAS=["👑","🐯","🌸","🦅"];
+const AVAPOOL=["👑","🎩","💎","🛥️","🥂","🏦","🐯","🦁","🦅","🐼","🦊","🐉","🐘","🦄","🐢","🌸","🗽","🗼","🏯","🎡","🕌","🌉","⚓","🚀"];
+window.cycleAva=function(i){
+  const b=document.getElementById("st-ava"+i); if(!b) return;
+  const at=AVAPOOL.indexOf(b.textContent.trim());
+  b.textContent=AVAPOOL[(at+1+AVAPOOL.length)%AVAPOOL.length];
+};
+const COLORS=["#e0245e","#19b27d","#ff9f1c","#5d7cff"];
+let P=[];
+let cfg={harsh:true, cash:1000, salary:120};
+let cur=0, lastRoll=7, gameOver=false, SPD=1, turnCount=0, buildSurcharge=0, soundOn=true;
+let LOGS=[], lastD=[3,4];
+const SAVE_KEY="ctp-world-save-v6";
+const EVENT_EVERY=12;
+const isAIp=p=>p.kind==="ai", isLoc=p=>p.kind==="local", isRem=p=>p.kind==="remote";
+
+const EVENTS=[
+  {n:"🌊 Khủng hoảng khí hậu toàn cầu", x:"Siêu bão càn quét — mỗi nhà sửa chữa $300M, mỗi khách sạn $1.2B.", f:async()=>{for(const q of alive()){let s=0;C.forEach(c=>{if(c.owner===q.id)s+=c.houses===5?120:c.houses*30;}); if(s) await pay(q,s,null);}}},
+  {n:"📉 Phố Wall sụp đổ", x:"Thị trường chứng khoán lao dốc — mọi người mất 15% tiền mặt.", f:async()=>{for(const q of alive()){const s=Math.floor(q.cash*0.15); if(s) await pay(q,s,null);}}},
+  {n:"🏦 Fed tăng lãi suất", x:"Trả ngay 12% giá trị mỗi bất động sản đang cầm cố.", f:async()=>{for(const q of alive()){let s=0;C.forEach(c=>{if(c.owner===q.id&&c.mortgaged)s+=Math.ceil(c.p*0.12);}); if(s) await pay(q,s,null);}}},
+  {n:"💸 Lạm phát toàn cầu", x:"Chi phí xây dựng tăng vĩnh viễn +$300M.", f:async()=>{buildSurcharge+=30;}},
+  {n:"⚡ Khủng hoảng năng lượng", x:"Trả $200M cho mỗi bất động sản đang sở hữu.", f:async()=>{for(const q of alive()){const n=C.filter(c=>c.owner===q.id).length; if(n) await pay(q,20*n,null);}}},
+  {n:"🕵️ G20 siết thuế tài sản", x:"Truy thu toàn cầu: mọi người trả 8% tài sản ròng.", f:async()=>{for(const q of alive()){const s=Math.ceil(netWorth(q)*0.08); if(s) await pay(q,s,null);}}},
+  {n:"🎉 Gói kích thích kinh tế toàn cầu", x:"Các ngân hàng trung ương bơm tiền: mọi người +$400M.", f:async()=>{alive().forEach(q=>{q.cash+=40;}); updateUI();}},
+];
+
+/* ================= HELPERS ================= */
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms*SPD));
+const alive=()=>P.filter(p=>p.alive);
+function houseCost(g){return GROUPS[g].hc+buildSurcharge;}
+function renderLogs(){const el=$("log"); if(el) el.innerHTML=LOGS.map(l=>`<div class="${l.c||""}">${l.m}</div>`).join("");}
+function log(msg,cls){LOGS.unshift({m:msg,c:cls===true?"imp":(cls||"")}); if(LOGS.length>90)LOGS.length=90; renderLogs();}
+function propVal(c){return c.mortgaged?Math.floor(c.p/2):c.p;}
+function netWorth(p){let s=p.cash; C.forEach(c=>{if(c.owner===p.id){s+=propVal(c)+(c.t==="prop"?c.houses*houseCost(c.g):0);}}); return s;}
+function ownsGroup(p,g){return C.filter(c=>c.g===g).every(c=>c.owner===p.id);}
+function groupCells(g){return C.filter(c=>c.g===g);}
+function canBuild(p,c){return c.t==="prop"&&c.owner===p.id&&ownsGroup(p,c.g)&&!groupCells(c.g).some(x=>x.mortgaged)&&c.houses<5;}
+function countType(p,t){return C.filter(c=>c.t===t&&c.owner===p.id&&!c.mortgaged).length;}
+
+const OWNABLE=C.filter(c=>["prop","rail","util"].includes(c.t)).map(c=>c.i);
+function chainLen(ownerId, idx){
+  const n=OWNABLE.length, at=OWNABLE.indexOf(idx);
+  if(at<0) return 1;
+  const own=j=>{const c=C[OWNABLE[((j%n)+n)%n]]; return c.owner===ownerId&&!c.mortgaged;};
+  if(!own(at)) return 1;
+  let len=1, l=at-1, r=at+1;
+  while(len<n&&own(l)){len++;l--;}
+  while(len<n&&own(r)){len++;r++;}
+  return Math.min(len,n);
+}
+function chainMult(L){return L>=6?100:[0,1,2,4,10,30][L];}
+function groupsOwned(ownerId){return Object.keys(GROUPS).filter(g=>groupCells(g).every(c=>c.owner===ownerId)).length;}
+function empireMult(ownerId){const g=groupsOwned(ownerId); return g>=2 ? 1+0.5*(g-1) : 1;}
+function fullRent(c){
+  const base=rentOf(c);
+  if(base===0) return {total:0, base:0, L:1, cm:1, em:1};
+  const L=chainLen(c.owner,c.i), cm=chainMult(L), em=empireMult(c.owner);
+  return {total:Math.round(base*cm*em), base, L, cm, em};
+}
+
+/* ---- sound ---- */
+let AC=null;
+document.addEventListener("click",()=>{if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}},{once:true});
+function tone(f,d,type,vol,delay){
+  if(!soundOn||!AC) return;
+  try{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type||"sine"; o.frequency.value=f;
+    g.gain.setValueAtTime(vol||0.05, AC.currentTime+(delay||0));
+    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+(delay||0)+d);
+    o.connect(g); g.connect(AC.destination);
+    o.start(AC.currentTime+(delay||0)); o.stop(AC.currentTime+(delay||0)+d+0.02);
+  }catch(e){}
+}
+const sfx={
+  dice(){tone(240,.06,"square",.04); tone(320,.06,"square",.04,.07);},
+  coin(){tone(660,.09,"sine",.06); tone(880,.12,"sine",.06,.08);},
+  pay(){tone(200,.14,"sawtooth",.045); tone(150,.18,"sawtooth",.04,.1);},
+  buy(){tone(523,.09,"sine",.06); tone(659,.09,"sine",.06,.09); tone(784,.14,"sine",.06,.18);},
+  jail(){tone(180,.3,"square",.05); tone(140,.4,"square",.05,.25);},
+  alert(){tone(440,.12,"triangle",.06); tone(440,.12,"triangle",.06,.18);},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,.22,"sine",.07,i*.13));},
+};
+
+function floatMoney(p, amt){
+  const idx=P.indexOf(p); const card=$("plist")?.children[idx];
+  if(!card) return;
+  const r=card.getBoundingClientRect();
+  const s=document.createElement("span");
+  s.className="fm "+(amt>0?"up":"dn");
+  s.textContent=(amt>0?"+":"−")+fmt(Math.abs(amt));
+  s.style.left=(r.right-110)+"px"; s.style.top=(r.top+6)+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),1200);
+}
+function confetti(){
+  const emo=["🎉","🌟","💰","✨","🧧","🏆"];
+  for(let i=0;i<60;i++){
+    const c=document.createElement("div");
+    c.className="cf";
+    c.textContent=emo[i%emo.length];
+    c.style.left=Math.random()*100+"vw";
+    c.style.animationDuration=(2.6+Math.random()*2.4)+"s";
+    c.style.animationDelay=(Math.random()*0.9)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),6000);
+  }
+}
+
+function modal(title, body, buttons){
+  return new Promise(res=>{
+    $("mtitle").innerHTML=title; $("mbody").innerHTML=body;
+    const bx=$("mbtns"); bx.innerHTML="";
+    buttons.forEach(b=>{
+      const btn=document.createElement("button");
+      btn.innerHTML=b.label; btn.className=b.cls||"btn-main";
+      btn.onclick=()=>{
+        let v=b.val;
+        if(typeof b.val==="function"){v=b.val(); if(v===undefined) return;}
+        $("overlay").classList.remove("show"); res(v);
+      };
+      bx.appendChild(btn);
+    });
+    $("overlay").classList.add("show");
+  });
+}
+function showWait(title,body){$("mtitle").innerHTML=title; $("mbody").innerHTML=body; $("mbtns").innerHTML=""; $("overlay").classList.add("show");}
+function hideWait(){$("overlay").classList.remove("show");}
+function waitClick(id){return new Promise(res=>{const b=$(id); b.disabled=false; b.onclick=()=>{b.disabled=true; b.onclick=null; res();};});}
+
+/* ================= NETWORK (PeerJS) ================= */
+const NET={mode:null, peer:null, conns:[], pending:{}, queue:{}, seq:0, myId:null, manage:false, firstState:false};
+function bcast(m){if(NET.mode==="host") NET.conns.forEach(c=>{try{c.conn.send(m);}catch(e){}});}
+function sendTo(pid,m){const c=NET.conns.find(x=>x.pid===pid); if(c){try{c.conn.send(m);}catch(e){}}}
+function snapMsg(){
+  return {t:"state",
+    ce:C.map(c=>({o:c.owner,h:c.houses,m:c.mortgaged,tr:c.tariff})),
+    pl:P.map(p=>({id:p.id,name:p.name,kind:p.kind,ava:p.ava,color:p.color,cash:p.cash,pos:p.pos,alive:p.alive,inJail:p.inJail,tu:!!p.tariffUsed})),
+    cur, turnCount, buildSurcharge, cfg, lastRoll, d:lastD, logs:LOGS.slice(0,50), tb:($("turnbar")?$("turnbar").innerHTML:"")};
+}
+function remoteAsk(pid, title, body, buttons){
+  return new Promise(res=>{
+    const id=++NET.seq;
+    NET.pending[id]={res, vals:buttons.map(b=>b.val), pid};
+    sendTo(pid,{t:"ask", id, title, body, buttons:buttons.map(b=>({label:b.label, cls:b.cls||""}))});
+  });
+}
+function decide(p, title, body, buttons){
+  if(isRem(p)) return remoteAsk(p.id, title, body, buttons);
+  return modal(title, body, buttons);
+}
+function noticeTo(p, title, body){
+  if(isRem(p)) return remoteAsk(p.id, title, body, [{label:"OK", val:1}]);
+  return modal(title, body, [{label:"OK", val:1}]);
+}
+function awaitAct(pid){return new Promise(res=>{(NET.queue[pid]=NET.queue[pid]||[]).push(res);});}
+function onGuestDrop(pid){
+  const p=P[pid]; if(!p) return;
+  if(p.kind==="remote"){
+    p.kind="ai"; p.name=(p.name+" 🤖").slice(0,16);
+    log(`📡 <b>${p.name}</b> mất kết nối — AI tiếp quản.`, "evt");
+    Object.keys(NET.pending).forEach(id=>{const pd=NET.pending[id]; if(pd.pid===pid){delete NET.pending[id]; pd.res(pd.vals[pd.vals.length-1]);}});
+    const q=NET.queue[pid]||[]; while(q.length) q.shift()({a:"end"});
+    updateUI();
+  }
+}
+function roomCode(){const cs="ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let s=""; for(let i=0;i<5;i++)s+=cs[Math.floor(Math.random()*cs.length)]; return s;}
+
+/* ================= BOARD RENDER ================= */
+function gridPos(i){
+  if(i<=10) return {r:11,c:11-i};
+  if(i<=20) return {r:21-i,c:1};
+  if(i<=30) return {r:1,c:i-19};
+  return {r:i-29,c:11};
+}
+function sideOf(i){return i<10?"b":i<20?"l":i<30?"t":"r";}
+function deedHTML(c){
+  if(c.t==="prop"){
+    const g=GROUPS[c.g];
+    return `<div class="deed"><div class="dh" style="background:${g.color}">${c.ico||""} ${c.n}</div><table>
+      <tr><td>Giá mua</td><td>${fmt(c.p)}</td></tr>
+      <tr><td>Thuê cơ bản</td><td>${fmt(c.r[0])} (×3 đủ khu)</td></tr>
+      <tr><td>🏠 1 / 2 / 3 / 4 (${UNIT})</td><td>${num(c.r[1])} / ${num(c.r[2])} / ${num(c.r[3])} / ${num(c.r[4])}</td></tr>
+      <tr><td>🏨 Khách sạn</td><td>${fmt(c.r[5])}</td></tr>
+      <tr><td>Giá xây nhà</td><td>${fmt(houseCost(c.g))}</td></tr>
+      <tr><td>Cầm cố</td><td>+${fmt(c.p/2)}</td></tr>
+      ${c.owner!==null&&P[c.owner]?`<tr><td>Chủ sở hữu</td><td style="color:${P[c.owner].color}">${P[c.owner].name}${c.mortgaged?" 🔒":""}</td></tr>`:""}
+    </table></div>`;
+  }
+  if(c.t==="rail") return `<div class="deed"><div class="dh" style="background:#7a8694">✈️ ${c.n}</div><table>
+    <tr><td>Giá mua</td><td>${fmt(c.p)}</td></tr><tr><td>Thuê 1/2/3/4 sân bay (${UNIT})</td><td>${num(25)}/${num(50)}/${num(100)}/${num(200)}</td></tr>
+    ${c.owner!==null&&P[c.owner]?`<tr><td>Chủ sở hữu</td><td style="color:${P[c.owner].color}">${P[c.owner].name}${c.mortgaged?" 🔒":""}</td></tr>`:""}</table></div>`;
+  if(c.t==="util") return `<div class="deed"><div class="dh" style="background:#a98f3f">${c.ico} ${c.n}</div><table>
+    <tr><td>Giá mua</td><td>${fmt(c.p)}</td></tr><tr><td>Thuê</td><td>4×/10× điểm xúc xắc × ${fmt(1)}</td></tr><tr><td>Phí hiện tại</td><td>${c.tariff===2?"🔺 ×2":(c.tariff===0.5?"🔻 ×0.5":"chuẩn")}</td></tr>
+    ${c.owner!==null&&P[c.owner]?`<tr><td>Chủ sở hữu</td><td style="color:${P[c.owner].color}">${P[c.owner].name}${c.mortgaged?" 🔒":""}</td></tr>`:""}</table></div>`;
+  return "";
+}
+function buildCells(){
+  const b=$("board");
+  C.forEach(c=>{
+    const d=document.createElement("div");
+    const gp=gridPos(c.i);
+    d.style.gridRow=gp.r; d.style.gridColumn=gp.c; d.id="cell"+c.i;
+    if(["go","jail","park","gotojail"].includes(c.t)){
+      d.className="cell corner";
+      d.innerHTML=`<div class="ico">${c.ico}</div><div>${c.n}</div>`;
+    }else{
+      const s=sideOf(c.i);
+      d.className=`cell side-${s}`;
+      let bar = `<div class="bar bar-${s}" style="background:${c.t==="prop"?GROUPS[c.g].color:"#ddd2b2"}"></div>`;
+      let mid = c.ico?`<div class="ico">${c.ico}</div>`:"";
+      let pr = c.p?`<div class="pr">${fmt(c.p)}</div>`:"";
+      d.innerHTML=`${bar}<span class="hs"></span><div class="nm">${c.n}</div>${mid}${pr}`;
+      if(["prop","rail","util"].includes(c.t)){
+        d.addEventListener("mouseenter",()=>{$("tip").innerHTML=deedHTML(c); $("tip").style.display="block";});
+        d.addEventListener("mousemove",e=>{
+          const t=$("tip"); const w=t.offsetWidth,h=t.offsetHeight;
+          let x=e.clientX+16,y=e.clientY+12;
+          if(x+w>innerWidth-8)x=e.clientX-w-14;
+          if(y+h>innerHeight-8)y=e.clientY-h-12;
+          t.style.left=x+"px"; t.style.top=y+"px";
+        });
+        d.addEventListener("mouseleave",()=>{$("tip").style.display="none";});
+      }
+    }
+    b.appendChild(d);
+  });
+  const ctr=document.createElement("div");
+  ctr.id="center";
+  ctr.innerHTML=`
+    <div class="ctitle"><h2>CỜ TỶ PHÚ</h2><small>WORLD EDITION</small></div>
+    <div id="roundbar"></div>
+    <div id="dicebox"><div class="die" id="d1"></div><div class="die" id="d2"></div></div>
+    <div id="turnbar"></div>
+    <div id="controls">
+      <button id="btn-roll" class="btn-main" disabled>Tung xúc xắc</button>
+      <button id="btn-trade" class="btn-sec" disabled>Giao dịch</button>
+      <button id="btn-end" class="btn-sec" disabled>Kết thúc lượt</button>
+    </div>
+    <div id="log"></div>`;
+  b.appendChild(ctr);
+  dieFace($("d1"),3); dieFace($("d2"),4);
+}
+function buildTokens(){
+  document.querySelectorAll(".token").forEach(t=>t.remove());
+  const b=$("board");
+  P.forEach(p=>{
+    const t=document.createElement("div");
+    t.className="token"+(p.kind!=="ai"?" me":""); t.id="tok"+p.id;
+    t.style.background=p.color; t.textContent=p.ava; t.title=p.name;
+    b.appendChild(t);
+  });
+}
+const PIPS={1:[[50,50]],2:[[28,28],[72,72]],3:[[26,26],[50,50],[74,74]],4:[[28,28],[28,72],[72,28],[72,72]],5:[[28,28],[28,72],[50,50],[72,28],[72,72]],6:[[28,25],[28,50],[28,75],[72,25],[72,50],[72,75]]};
+function dieFace(el,v){el.innerHTML=PIPS[v].map(([x,y])=>`<span class="pip" style="left:${x}%;top:${y}%"></span>`).join("");}
+
+function placeTokens(){
+  if(!P.length) return;
+  const br=$("board").getBoundingClientRect();
+  const byCell={};
+  P.forEach(p=>{if(p.alive){(byCell[p.pos]=byCell[p.pos]||[]).push(p);}});
+  P.forEach(p=>{
+    const tok=$("tok"+p.id); if(!tok) return;
+    if(!p.alive){tok.style.display="none"; return;}
+    tok.style.display="flex";
+    const cr=$("cell"+p.pos).getBoundingClientRect();
+    const grp=byCell[p.pos], idx=grp.indexOf(p), n=grp.length;
+    let dx=0,dy=0;
+    if(n>1){dx=(idx%2)*16-8; dy=Math.floor(idx/2)*16-(n>2?8:0);}
+    const cx=cr.left-br.left+cr.width/2+dx, cy=cr.top-br.top+cr.height/2+dy;
+    tok.style.left=(cx-tok.offsetWidth/2)+"px";
+    tok.style.top=(cy-tok.offsetHeight/2)+"px";
+  });
+}
+addEventListener("resize",placeTokens);
+
+function updateUI(){
+  C.forEach(c=>{
+    const el=$("cell"+c.i); if(!el) return;
+    const hs=el.querySelector(".hs");
+    if(hs) hs.textContent = c.t==="util" ? (c.tariff===2?"🔺":(c.tariff===0.5?"🔻":"")) : (c.houses===5?"🏨":(c.houses>0?"🏠".repeat(c.houses):""));
+    if(c.owner!==null&&P[c.owner]){el.classList.add("owned-ring"); el.style.setProperty("--oc",P[c.owner].color);}
+    else el.classList.remove("owned-ring");
+    el.classList.toggle("mort", c.mortgaged);
+  });
+  const pl=$("plist"); pl.innerHTML="";
+  P.forEach(p=>{
+    const chips=C.filter(c=>c.owner===p.id).map(c=>{
+      const dot=c.g?`<span class="dot" style="background:${GROUPS[c.g].color}"></span>`:(c.t==="rail"?"✈️":"⚡");
+      const h=c.houses?(c.houses===5?"🏨":"🏠"+c.houses):"";
+      return `<span class="chip${c.mortgaged?" mch":""}">${dot}${c.n}${h}</span>`;
+    }).join("");
+    let badge="";
+    if(p.kind==="ai") badge=" <span style='font-size:10px;color:var(--muted);font-weight:700'>AI</span>";
+    if(p.kind==="remote") badge=" <span style='font-size:10px;color:var(--good);font-weight:700'>🌐</span>";
+    if(NET.mode==="guest"&&p.id===NET.myId) badge=" <span style='font-size:10px;color:var(--gold2);font-weight:700'>(bạn)</span>";
+    const d=document.createElement("div");
+    d.className="pcard"+(p.id===cur&&p.alive?" active":"")+(p.alive?"":" dead");
+    d.style.setProperty("--pc",p.color);
+    d.innerHTML=`<div class="row1"><span class="ava">${p.ava}</span>${p.name}${p.inJail?" 🚔":""}${badge}</div>
+      <div class="row2"><span>💵 <b>${fmt(p.cash)}</b></span><span>Tài sản: <b>${fmt(netWorth(p))}</b></span></div>
+      <div class="props">${p.alive?(chips||"<span class='chip'>Chưa có bất động sản</span>"):"<span class='chip'>💥 Phá sản</span>"}</div>`;
+    pl.appendChild(d);
+  });
+  const rb=$("roundbar");
+  if(rb&&P.length){
+    const round=Math.floor(turnCount/Math.max(1,P.length))+1;
+    rb.innerHTML=`Vòng <b>${round}</b>${cfg.harsh?` · 💀 sự kiện sau <b>${EVENT_EVERY-(turnCount%EVENT_EVERY)}</b> lượt${buildSurcharge?` · 🏗️ phí xây +${fmt(buildSurcharge)}`:""}`:""}`;
+  }
+  placeTokens();
+  if(NET.mode===null) saveGame();
+  if(NET.mode==="host") bcast(snapMsg());
+}
+function flash(i){const el=$("cell"+i); if(!el)return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");}
+
+/* ================= SAVE / LOAD (offline only) ================= */
+function saveGame(){
+  if(gameOver||!P.length){if(gameOver)localStorage.removeItem(SAVE_KEY); return;}
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      v:6, cur, lastRoll, turnCount, buildSurcharge, cfg,
+      pl:P.map(p=>({n:p.name,k:p.kind,av:p.ava,co:p.color,c:p.cash,o:p.pos,a:p.alive,j:p.inJail,t:p.jailTurns})),
+      ce:C.map(c=>({o:c.owner,h:c.houses,m:c.mortgaged,tr:c.tariff})),
+    }));
+  }catch(e){}
+}
+function loadGame(){
+  try{
+    const s=JSON.parse(localStorage.getItem(SAVE_KEY));
+    if(!s||s.v!==6) return false;
+    cur=s.cur; lastRoll=s.lastRoll; turnCount=s.turnCount||0; buildSurcharge=s.buildSurcharge||0; cfg=s.cfg||cfg;
+    P=s.pl.map((q,i)=>({id:i,name:q.n,kind:q.k==="remote"?"ai":q.k,ava:q.av,color:q.co,cash:q.c,pos:q.o,alive:q.a,inJail:q.j,jailTurns:q.t}));
+    s.ce.forEach((q,i)=>{Object.assign(C[i],{owner:q.o,houses:q.h,mortgaged:q.m,tariff:q.tr||1});});
+    return true;
+  }catch(e){return false;}
+}
+
+/* ================= MONEY ================= */
+function gain(p,amt){p.cash+=amt; log(`${p.name} nhận <b>+${fmt(amt)}</b>.`); sfx.coin(); updateUI(); floatMoney(p,amt);}
+async function pay(p, amt, to){
+  if(amt<=0) return;
+  if(p.cash<amt) await liquidate(p, amt);
+  const paid=Math.min(p.cash, amt);
+  p.cash-=paid;
+  if(to) to.cash+=paid;
+  log(`${p.name} trả <b>−${fmt(amt)}</b>${to?" cho "+to.name:""}.`);
+  sfx.pay(); updateUI(); floatMoney(p,-amt); if(to) floatMoney(to,paid);
+  if(paid<amt) bankrupt(p);
+}
+async function liquidate(p, need){
+  for(const c of C){
+    if(p.cash>=need) break;
+    if(c.owner===p.id && c.t==="prop" && c.houses>0){
+      const sell=Math.floor(houseCost(c.g)/2);
+      while(c.houses>0 && p.cash<need){c.houses--; p.cash+=sell;}
+      log(`${p.name} bán nhà ở ${c.n} để gom tiền.`);
+    }
+  }
+  const owned=C.filter(c=>c.owner===p.id&&!c.mortgaged&&c.houses===0).sort((a,b)=>a.p-b.p);
+  for(const c of owned){
+    if(p.cash>=need) break;
+    c.mortgaged=true; p.cash+=Math.floor(c.p/2);
+    log(`🔒 ${p.name} cầm cố <b>${c.n}</b> (+${fmt(Math.floor(c.p/2))}).`);
+  }
+  updateUI();
+}
+function bankrupt(p){
+  p.alive=false; p.cash=0;
+  C.forEach(c=>{if(c.owner===p.id){c.owner=null; c.houses=0; c.mortgaged=false;}});
+  log(`💥 <b>${p.name} PHÁ SẢN!</b> Toàn bộ bất động sản trả về ngân hàng.`, true);
+  sfx.jail();
+  updateUI();
+  checkWin();
+}
+function checkWin(){
+  const a=alive();
+  if(a.length===1 && !gameOver){
+    gameOver=true; localStorage.removeItem(SAVE_KEY);
+    recordHof();
+    const w=a[0];
+    sfx.win(); confetti();
+    const rank=[...P].sort((x,y)=>netWorth(y)-netWorth(x));
+    const medals=["🥇","🥈","🥉","4."];
+    const lb=rank.map((q,i)=>`<div class="lb-row"><span>${medals[i]}</span><span class="ava" style="width:24px;height:24px;border-radius:50%;background:${q.color};display:inline-flex;align-items:center;justify-content:center;font-size:12px">${q.ava}</span>${q.name}<b>${q.alive?fmt(netWorth(q)):"💥 Phá sản"}</b></div>`).join("");
+    const body=`<b style="color:${w.color}">${w.ava} ${w.name}</b> là tỷ phú cuối cùng trụ lại!<br><br>${lb}`;
+    bcast({t:"notice", title:"🏆 KẾT THÚC", body});
+    modal("🏆 KẾT THÚC", body, [{label:"Chơi lại 🎲", val:1}]).then(()=>location.reload());
+  }
+}
+
+/* ================= MOVEMENT & CELLS ================= */
+async function passGo(p){
+  if(!p.alive) return;
+  p.cash+=cfg.salary;
+  log(`${p.name} qua Khởi Hành: <b>+${fmt(cfg.salary)}</b>.`);
+  sfx.coin(); floatMoney(p,cfg.salary);
+  if(cfg.harsh){
+    const n=C.filter(c=>c.owner===p.id).length;
+    if(n>0){
+      const fee=15*n;
+      log(`🧰 Phí bảo trì ${n} BĐS: −${fmt(fee)}.`);
+      await pay(p,fee,null);
+    }
+  }
+  updateUI();
+}
+async function moveTo(p, dest, collectGo){
+  if(collectGo && dest<=p.pos && p.alive){await passGo(p); if(!p.alive) return;}
+  p.pos=dest; flash(dest); updateUI();
+  await sleep(380);
+  await resolveCell(p);
+}
+async function stepMove(p, steps){
+  for(let s=0;s<steps;s++){
+    p.pos=(p.pos+1)%40;
+    if(p.pos===0){await passGo(p); if(!p.alive) return;}
+    updateUI(); await sleep(150);
+  }
+  flash(p.pos);
+  await resolveCell(p);
+}
+function sendToJail(p){
+  p.pos=10; p.inJail=true; p.jailTurns=0; p.doubleStreak=0; p.jailedNow=true;
+  log(`🚔 <b>${p.name} bị tống vào tù!</b>`, true);
+  sfx.jail();
+  updateUI();
+}
+function rentOf(c){
+  if(c.mortgaged) return 0;
+  const o=P[c.owner];
+  if(c.t==="prop"){
+    if(c.houses>0) return c.r[c.houses];
+    return ownsGroup(o,c.g) ? c.r[0]*3 : c.r[0];
+  }
+  if(c.t==="rail") return 25*Math.pow(2, countType(o,"rail")-1);
+  if(c.t==="util") return Math.round((countType(o,"util")===2?10:4)*lastRoll*(c.tariff||1));
+  return 0;
+}
+async function resolveCell(p){
+  const c=C[p.pos];
+  if(!p.alive) return;
+  switch(c.t){
+    case "go": break;
+    case "park": log(`${p.name} nghỉ ở Bãi đậu xe. 🌴`); break;
+    case "jail": log(`${p.name} chỉ ghé thăm tù.`); break;
+    case "gotojail": sendToJail(p); break;
+    case "tax": {
+      let amt=c.p;
+      if(cfg.harsh && c.i===4){
+        amt=Math.max(c.p, Math.round(netWorth(p)*0.12/5)*5);
+        log(`🧾 ${p.name} bị thu thuế tài sản lũy tiến: <b>${fmt(amt)}</b> (12% tài sản ròng).`,"evt");
+      } else if(cfg.harsh && c.i===38){
+        amt=200;
+        log(`💎 ${p.name} dừng ở ${c.n}: ${fmt(amt)}.`);
+      } else {
+        log(`${p.name} dừng ở ${c.n}.`);
+      }
+      await pay(p,amt,null);
+      break;
+    }
+    case "chance": await drawCard(p, CHANCE, "❓ CƠ HỘI"); break;
+    case "chest": await drawCard(p, CHEST, "🎁 VẬN MỆNH"); break;
+    default: await resolveProperty(p,c);
+  }
+}
+/* ---- hostile takeover ---- */
+async function tryTakeover(p,c){
+  if(!p.alive||gameOver) return;
+  if(!["prop","rail","util"].includes(c.t)||c.owner===null||c.owner===p.id||c.houses>0) return;
+  const owner=P[c.owner];
+  const bid=Math.round(c.p*1.5/5)*5;
+  if(p.cash<bid) return;
+  let go=false;
+  if(isAIp(p)){
+    const helps=(c.g&&groupCells(c.g).some(x=>x.owner===p.id))||chainLen(p.id,(c.i+39)%40)>=2;
+    go = helps && p.cash>=bid+300 && Math.random()<0.5;
+  }else{
+    go = await decide(p,"⚔️ Chiếm đất?", `Cược <b>${fmt(bid)}</b> để cướp <b>${c.n}</b> từ ${owner.name}?<br>Tung 1 xúc xắc: <b>4–6 = chiếm thành công</b> (tiền vào túi ${owner.name})<br>1–3 = mất ${fmt(Math.floor(bid/2))} mà trắng tay.`,
+      [{label:"⚔️ Chiếm — "+fmt(bid), val:1},{label:"Thôi", val:0, cls:"btn-sec"}]);
+  }
+  if(!go) return;
+  const die=1+Math.floor(Math.random()*6);
+  if(die>=4){
+    await pay(p,bid,owner); if(!p.alive) return;
+    c.owner=p.id;
+    log(`⚔️ <b>${p.name} tung ${die} — CHIẾM ${c.n} từ ${owner.name}!</b> (trả ${fmt(bid)})`, true);
+    sfx.buy(); updateUI();
+    if(!isAIp(p)) await noticeTo(p,"⚔️ Thành công!", `Xúc xắc ra <b>${die}</b> — <b>${c.n}</b> giờ là của bạn!`);
+    if(!isAIp(owner)&&owner.alive) await noticeTo(owner,"⚔️ Bị chiếm đất!", `${p.name} đã cướp <b>${c.n}</b> của bạn (đền bù ${fmt(bid)}).`);
+  }else{
+    const half=Math.floor(bid/2);
+    log(`⚔️ ${p.name} tung ${die} — chiếm ${c.n} THẤT BẠI, mất ${fmt(half)} cho ${owner.name}.`,"evt");
+    await pay(p,half,owner);
+    if(!isAIp(p)&&p.alive) await noticeTo(p,"💨 Thất bại", `Xúc xắc ra <b>${die}</b> — mất ${fmt(half)}, đất vẫn của ${owner.name}.`);
+  }
+}
+async function resolveProperty(p,c){
+  if(c.owner===null){
+    log(`${p.name} dừng ở <b>${c.n}</b> (chưa có chủ, giá ${fmt(c.p)}).`);
+    if(isAIp(p)){
+      if(aiWantsToBuy(p,c)){buyProp(p,c);} else log(`${p.name} quyết định không mua.`);
+    }else{
+      if(p.cash>=c.p){
+        const ans=await decide(p,"Mua bất động sản?", `${deedHTML(c)}<br>${p.name} đang có <b>${fmt(p.cash)}</b>.`,
+          [{label:"Mua — "+fmt(c.p),val:1},{label:"Bỏ qua",val:0,cls:"btn-sec"}]);
+        if(ans) buyProp(p,c); else log(`${p.name} bỏ qua.`);
+      }else log(`${p.name} không đủ tiền mua.`);
+    }
+  }else if(c.owner!==p.id){
+    const o=P[c.owner];
+    const fr=fullRent(c);
+    if(fr.total>0){
+      let note="";
+      if(fr.cm>1) note+=` 🔗 chuỗi ${fr.L} BĐS liền kề ×${fr.cm}!`;
+      if(fr.em>1) note+=` 👑 đế chế ${groupsOwned(c.owner)} khu ×${fr.em}!`;
+      log(`${p.name} dừng ở <b>${c.n}</b> của ${o.name} — thuê <b>${fmt(fr.total)}</b>${note?` (gốc ${fmt(fr.base)} —${note})`:""}`, fr.cm>=10?"evt":undefined);
+      if(!isAIp(p) && fr.total>=100) await noticeTo(p,"Trả tiền thuê 😱", `${p.name} dừng ở <b>${c.n}</b> của ${o.name}.${note?`<br><b style="color:var(--bad)">${note}</b>`:""}<br>Tiền thuê: <b style="color:var(--bad)">${fmt(fr.total)}</b>`);
+      await pay(p, fr.total, o);
+    }else{
+      log(`${p.name} dừng ở <b>${c.n}</b> (đang cầm cố 🔒) — miễn thuê.`);
+    }
+    await tryTakeover(p,c);
+  }else{
+    log(`${p.name} về thăm đất nhà: ${c.n}.`);
+  }
+}
+function buyProp(p,c){
+  p.cash-=c.p; c.owner=p.id;
+  log(`✅ <b>${p.name} mua ${c.n}</b> với giá ${fmt(c.p)}.`, !isAIp(p));
+  sfx.buy(); updateUI(); floatMoney(p,-c.p);
+}
+async function drawCard(p, deck, title){
+  const card=deck[Math.floor(Math.random()*deck.length)];
+  log(`${title}: ${card.x}`);
+  if(!isAIp(p)) await noticeTo(p, title, `<i>"${card.x}"</i>`);
+  else await sleep(550);
+  await card.f(p);
+  updateUI();
+}
+
+/* ================= ECONOMIC EVENTS ================= */
+async function econEvent(){
+  const e=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  log(`📢 <b>BIẾN ĐỘNG KINH TẾ — ${e.n}:</b> ${e.x}`,"evt");
+  sfx.alert();
+  bcast({t:"notice", title:"📢 BIẾN ĐỘNG KINH TẾ THẾ GIỚI", body:`<b style="font-size:16px">${e.n}</b><br>${e.x}`});
+  await modal("📢 BIẾN ĐỘNG KINH TẾ THẾ GIỚI", `<b style="font-size:16px">${e.n}</b><br>${e.x}`, [{label:"Chấp nhận số phận",val:1}]);
+  await e.f();
+  updateUI();
+}
+
+/* ================= TRADE ================= */
+function transferProp(c, seller, buyer, price){
+  buyer.cash-=price; seller.cash+=price; c.owner=buyer.id;
+  log(`🤝 <b>${buyer.name} mua ${c.n}</b> từ ${seller.name} với giá <b>${fmt(price)}</b>.`, true);
+  sfx.buy(); updateUI(); floatMoney(buyer,-price); floatMoney(seller,price);
+}
+function aiAskPrice(ai, c, buyer){
+  let m=1.3;
+  const others=c.g?groupCells(c.g).filter(x=>x!==c):[];
+  if(others.some(x=>x.owner===ai.id)) m=2.4;
+  else if(others.length&&others.every(x=>x.owner===buyer.id)) m=2.8;
+  else if(others.some(x=>x.owner===buyer.id)) m=1.8;
+  if(c.t==="rail"&&countType(ai,"rail")>=2) m=2.0;
+  return Math.round(c.p*m/5)*5;
+}
+async function tradeAttempt(buyer, ci, offer){
+  const c=C[ci]; if(!c) return;
+  if(c.owner===null||c.owner===buyer.id||c.houses>0) return;
+  const seller=P[c.owner];
+  if(!seller.alive) return;
+  if(offer>buyer.cash){await noticeTo(buyer,"Không đủ tiền 🥲",`${buyer.name} chỉ có ${fmt(buyer.cash)}.`); return;}
+  if(!isAIp(seller)){
+    const ok=await decide(seller, `🤝 ${seller.ava} ${seller.name}, có bán không?`,
+      `${buyer.name} đề nghị mua <b>${c.n}</b> của bạn với giá <b style="color:var(--good)">${fmt(offer)}</b> (giá gốc ${fmt(c.p)}).`,
+      [{label:"Bán",val:1},{label:"Từ chối",val:0,cls:"btn-sec"}]);
+    if(ok){transferProp(c, seller, buyer, offer);}
+    else{log(`${seller.name} từ chối bán ${c.n}.`); await noticeTo(buyer,"Bị từ chối",`${seller.name} không bán <b>${c.n}</b>.`);}
+    return;
+  }
+  const ask=aiAskPrice(seller,c,buyer);
+  if(offer>=ask){
+    transferProp(c, seller, buyer, offer);
+    await noticeTo(buyer,"✅ Thành công!",`${seller.name} đồng ý bán <b>${c.n}</b> với giá ${fmt(offer)}.`);
+  }else{
+    const btns=buyer.cash>=ask?[{label:"Chốt "+fmt(ask),val:1},{label:"Thôi",val:0,cls:"btn-sec"}]:[{label:"Thôi",val:0,cls:"btn-sec"}];
+    const counter=await decide(buyer,"Bị từ chối",`${seller.name} lắc đầu: <i>"${fmt(offer)} thì chưa đủ. <b>${fmt(ask)}</b> thì nói chuyện."</i>`, btns);
+    if(counter) transferProp(c, seller, buyer, ask);
+    else log(`${buyer.name} không đạt thoả thuận mua ${c.n}.`);
+  }
+}
+function tradeFormBody(me){
+  const sellable=C.filter(c=>c.owner!==null&&c.owner!==me.id&&P[c.owner].alive&&c.houses===0&&["prop","rail","util"].includes(c.t));
+  if(!sellable.length) return null;
+  const opts=sellable.map(c=>`<option value="${c.i}">${c.n} — chủ: ${P[c.owner].name} (giá gốc ${fmt(c.p)})${c.mortgaged?" 🔒":""}</option>`).join("");
+  return `Chọn bất động sản muốn mua và ra giá:<br>
+    <select id="tr-prop">${opts}</select>
+    <input id="tr-offer" type="number" step="50" min="0" placeholder="Giá đề nghị (${UNIT})">
+    <div style="font-size:11px;color:var(--muted);margin-top:6px">${me.name} đang có ${fmt(me.cash)}. Chủ đất thường đòi 1.3–2.8× giá gốc.</div>`;
+}
+async function openTradeLocal(human){
+  const body=tradeFormBody(human);
+  if(!body){await modal("🤝 Giao dịch","Chưa có bất động sản nào của người khác để mua.",[{label:"OK",val:1}]); return;}
+  const ans=await modal("🤝 Đề nghị mua đất", body, [
+    {label:"Gửi đề nghị", val:()=>{
+      const ci=+document.getElementById("tr-prop").value;
+      const raw=+document.getElementById("tr-offer").value;
+      if(!raw||raw<=0) return undefined;
+      return {ci, ofr:Math.max(1, Math.round(raw/SC))};
+    }},
+    {label:"Hủy", val:null, cls:"btn-sec"},
+  ]);
+  if(!ans) return;
+  await tradeAttempt(human, ans.ci, ans.ofr);
+}
+async function aiTradeOffer(ai){
+  if(Math.random()<0.45) return;
+  for(const g of Object.keys(GROUPS)){
+    const cells=groupCells(g);
+    const mine=cells.filter(c=>c.owner===ai.id);
+    const missing=cells.filter(c=>c.owner!==null&&c.owner!==ai.id&&c.houses===0);
+    if(mine.length===cells.length-1 && missing.length===1){
+      const c=missing[0], owner=P[c.owner];
+      if(!owner.alive) continue;
+      const price=Math.round(c.p*1.6/5)*5;
+      if(ai.cash < price+150) continue;
+      if(isAIp(owner)){
+        const ownerWants=groupCells(g).some(x=>x.owner===owner.id&&x!==c);
+        if(!ownerWants){transferProp(c, owner, ai, price); await sleep(500);}
+        return;
+      }
+      const ans=await decide(owner, `🤝 ${ai.ava} ${ai.name} muốn mua đất của ${owner.name}`,
+        `${deedHTML(c)}<br>${ai.name} đề nghị <b style="color:var(--good)">${fmt(price)}</b> (giá gốc ${fmt(c.p)}) cho <b>${c.n}</b>.<br><span style="font-size:11px;color:var(--muted)">Lưu ý: bán xong ${ai.name} sẽ đủ bộ ${GROUPS[g].name}.</span>`,
+        [{label:"Bán — nhận "+fmt(price),val:1},{label:"Từ chối",val:0,cls:"btn-sec"}]);
+      if(ans) transferProp(c, owner, ai, price);
+      else log(`${owner.name} từ chối lời đề nghị của ${ai.name}.`);
+      return;
+    }
+  }
+}
+
+/* ================= AI ================= */
+function aiWantsToBuy(p,c){
+  if(p.cash < c.p) return false;
+  const reserve = c.p<=120 ? 50 : 150;
+  return p.cash - c.p >= reserve;
+}
+async function aiManage(p){
+  for(const c of C){
+    if(c.owner===p.id && c.mortgaged && p.cash>700){
+      const cost=Math.ceil(c.p*0.55);
+      if(p.cash-cost>500){p.cash-=cost; c.mortgaged=false; log(`🔓 ${p.name} chuộc lại <b>${c.n}</b> (−${fmt(cost)}).`); updateUI(); await sleep(250);}
+    }
+  }
+  let built=true;
+  while(built){
+    built=false;
+    for(const c of C){
+      if(canBuild(p,c)){
+        const cost=houseCost(c.g);
+        if(p.cash - cost >= 400){
+          p.cash-=cost; c.houses++;
+          log(`🏗️ ${p.name} xây ${c.houses===5?"khách sạn":"nhà"} ở <b>${c.n}</b>.`);
+          built=true; updateUI(); await sleep(280);
+        }
+      }
+    }
+  }
+  await aiTradeOffer(p);
+}
+
+/* ================= MANAGE PANEL ================= */
+function manageActions(p,c){
+  const acts=[];
+  if(c.t==="prop"&&canBuild(p,c)) acts.push({a:"build", label:`Xây ${fmt(houseCost(c.g))}`, dis:p.cash<houseCost(c.g), cls:"btn-main"});
+  if(c.t==="prop"&&c.houses>0) acts.push({a:"sellh", label:`Bán nhà +${fmt(Math.floor(houseCost(c.g)/2))}`});
+  if(c.houses===0&&!c.mortgaged) acts.push({a:"mort", label:`Cầm cố +${fmt(c.p/2)}`});
+  if(c.mortgaged) acts.push({a:"redeem", label:`Chuộc −${fmt(Math.ceil(c.p*0.55))}`, dis:p.cash<Math.ceil(c.p*0.55)});
+  if(c.t==="util"&&!c.mortgaged){
+    acts.push({a:"tarup", label:"🔺 Tăng phí", dis:!!p.tariffUsed, cls:"btn-main"});
+    acts.push({a:"tardown", label:"🔻 Giảm phí", dis:!!p.tariffUsed});
+  }
+  return acts;
+}
+async function applyManage(p, a, ci){
+  const c=C[ci]; if(!c||c.owner!==p.id) return;
+  if((a==="tarup"||a==="tardown")&&c.t==="util"&&!p.tariffUsed&&!c.mortgaged){
+    p.tariffUsed=true;
+    const k=countType(p,"util")===2?2:1;
+    if(a==="tarup"){
+      c.tariff=2;
+      const title="🔺 SỐC PHÍ HẠ TẦNG", body=`<b>${p.name}</b> tăng phí <b>${c.n}</b>${k===2?" (độc quyền hạ tầng ×2)":""}!<br>Mọi người chơi khác trả <b>${fmt(25*k)}/BĐS sở hữu</b> cho ${p.name}. Thuê tại ô này ×2.`;
+      log(`🔺 <b>${p.name} tăng phí ${c.n}!</b> Người chơi khác trả ${fmt(25*k)}/BĐS${k===2?" (độc quyền ×2)":""}. Thuê ô này ×2.`,"evt");
+      sfx.alert(); bcast({t:"notice", title, body});
+      for(const q of alive()){
+        if(q===p) continue;
+        const n=C.filter(x=>x.owner===q.id).length;
+        if(n) await pay(q, 25*k*n, p);
+        if(gameOver) break;
+      }
+    }else{
+      c.tariff=0.5;
+      const bonus=15*k;
+      log(`🔻 <b>${p.name} giảm phí ${c.n}!</b> Kích cầu: mọi người (kể cả ${p.name}) nhận +${fmt(bonus)}. Thuê ô này ÷2.`,"evt");
+      sfx.coin(); bcast({t:"notice", title:"🔻 GIẢM PHÍ KÍCH CẦU", body:`<b>${p.name}</b> giảm phí <b>${c.n}</b> — mọi người nhận +${fmt(bonus)}. Thuê tại ô này ÷2.`});
+      alive().forEach(q=>{q.cash+=bonus;});
+    }
+    updateUI();
+    return;
+  }
+  if(a==="build"&&canBuild(p,c)&&p.cash>=houseCost(c.g)){p.cash-=houseCost(c.g); c.houses++; sfx.buy(); log(`🏗️ ${p.name} xây ${c.houses===5?"khách sạn":"nhà"} ở <b>${c.n}</b>.`,true);}
+  if(a==="sellh"&&c.t==="prop"&&c.houses>0){const s=Math.floor(houseCost(c.g)/2); c.houses--; p.cash+=s; log(`${p.name} bán nhà ở ${c.n} (+${fmt(s)}).`);}
+  if(a==="mort"&&c.houses===0&&!c.mortgaged){c.mortgaged=true; p.cash+=c.p/2; log(`🔒 ${p.name} cầm cố <b>${c.n}</b> (+${fmt(c.p/2)}).`);}
+  if(a==="redeem"&&c.mortgaged){const cost=Math.ceil(c.p*0.55); if(p.cash>=cost){p.cash-=cost; c.mortgaged=false; log(`🔓 ${p.name} chuộc lại <b>${c.n}</b> (−${fmt(cost)}).`);}}
+  updateUI();
+}
+function refreshManagePanel(p, sender){
+  const panel=$("manage-panel"), list=$("managelist");
+  const owned=C.filter(c=>c.owner===p.id);
+  if(!owned.length||!p.alive){panel.style.display="none"; return;}
+  panel.style.display="block"; list.innerHTML="";
+  owned.forEach(c=>{
+    const row=document.createElement("div"); row.className="mrow";
+    const dot=c.g?`<span class="dot" style="background:${GROUPS[c.g].color};display:inline-block;width:8px;height:8px;border-radius:3px"></span> `:(c.ico+" ");
+    const h=c.houses?(c.houses===5?" 🏨":" 🏠×"+c.houses):"";
+    row.innerHTML=`<span>${dot}${c.n}${h}${c.mortgaged?" 🔒":""}</span>`;
+    const bts=document.createElement("span"); bts.className="mbts";
+    manageActions(p,c).forEach(ac=>{
+      const b=document.createElement("button"); b.className=ac.cls||"btn-sec"; b.textContent=ac.label; b.disabled=!!ac.dis;
+      b.onclick=()=>{ sender(ac.a, c.i); };
+      bts.appendChild(b);
+    });
+    row.appendChild(bts); list.appendChild(row);
+  });
+}
+
+/* ================= TURN ENGINE (host/offline) ================= */
+async function animateRoll(){
+  sfx.dice();
+  $("d1").classList.add("rolling"); $("d2").classList.add("rolling");
+  for(let i=0;i<6;i++){dieFace($("d1"),1+Math.floor(Math.random()*6)); dieFace($("d2"),1+Math.floor(Math.random()*6)); await sleep(65);}
+  const a=1+Math.floor(Math.random()*6);
+  let b=1+Math.floor(Math.random()*6);
+  if(a===b && Math.random()<0.6){ b=b===6?5:b+1; }
+  lastD=[a,b];
+  dieFace($("d1"),a); dieFace($("d2"),b); lastRoll=a+b;
+  $("d1").classList.remove("rolling"); $("d2").classList.remove("rolling");
+  return [a,b];
+}
+async function handleJail(p){
+  p.jailTurns++;
+  if(isAIp(p)){
+    if(p.cash>150 || p.jailTurns>=3){
+      await pay(p,50,null); if(!p.alive) return false;
+      p.inJail=false; log(`${p.name} nộp ${fmt(50)} để ra tù.`);
+      return "roll";
+    }
+    const [a,b]=await animateRoll();
+    if(a===b){p.inJail=false; log(`${p.name} tung đôi ${a}-${b}, ra tù!`); await stepMove(p,a+b); return "moved";}
+    log(`${p.name} không tung được đôi, ở lại tù.`);
+    return false;
+  }
+  const opts=[{label:"Tung xúc xắc (cần đôi)",val:"roll",cls:"btn-sec"}];
+  if(p.cash>=50) opts.unshift({label:`Trả ${fmt(50)} ra tù`,val:"pay"});
+  const ans=await decide(p, `🚔 ${p.name} đang trong tù`, `Lượt thứ ${p.jailTurns}/3 trong tù.${p.jailTurns>=3?`<br><b>Lượt cuối: nếu không tung được đôi, buộc phải trả ${fmt(50)}.</b>`:""}`, opts);
+  if(ans==="pay"){
+    await pay(p,50,null); if(!p.alive) return false;
+    p.inJail=false; log(`${p.name} nộp ${fmt(50)} để ra tù.`);
+    return "roll";
+  }
+  const [a,b]=await animateRoll();
+  if(a===b){p.inJail=false; log(`${p.name} tung đôi ${a}-${b}, ra tù!`,true); await stepMove(p,a+b); return "moved";}
+  log(`Không phải đôi (${a}-${b}).`);
+  if(p.jailTurns>=3){
+    await noticeTo(p,"Hết hạn tù",`${p.name} phải trả ${fmt(50)} và đi theo xúc xắc vừa tung.`);
+    await pay(p,50,null); if(!p.alive) return false;
+    p.inJail=false; await stepMove(p,a+b);
+    return "moved";
+  }
+  return false;
+}
+async function takeTurn(p){
+  if(gameOver || !p.alive) return;
+  $("turnbar").innerHTML=`Lượt của <b style="color:${p.color}">${p.ava} ${p.name}</b>${isAIp(p)?" — AI đang chơi…":(isRem(p)?" — 🌐 đang chờ người chơi online…":"")}`;
+  turnCount++;
+  updateUI();
+  p.doubleStreak=0; p.jailedNow=false; p.tariffUsed=false;
+
+  if(cfg.harsh && turnCount%EVENT_EVERY===0){
+    await econEvent();
+    if(gameOver) return;
+    if(!p.alive){ nextPlayer(); return; }
+  }
+  if(cfg.harsh){
+    let intr=0;
+    C.forEach(c=>{if(c.owner===p.id&&c.mortgaged) intr+=Math.ceil(c.p*0.04);});
+    if(intr>0){
+      log(`🏦 ${p.name} trả lãi cầm cố 4%: −${fmt(intr)}.`,"evt");
+      await pay(p,intr,null);
+      if(!p.alive){ nextPlayer(); return; }
+      if(gameOver) return;
+    }
+  }
+
+  if(p.inJail){
+    const res=await handleJail(p);
+    if(res!=="roll"){ await endPhase(p); return; }
+  }
+
+  let again=true;
+  while(again && p.alive && !gameOver && !p.jailedNow){
+    again=false;
+    if(isLoc(p)){ $("turnbar").innerHTML=`Lượt của <b style="color:${p.color}">${p.ava} ${p.name}</b> — tung xúc xắc!`; updateUI(); await waitClick("btn-roll"); }
+    else if(isRem(p)){ await decide(p,"🎲 Tới lượt bạn","Tung xúc xắc nào!",[{label:"🎲 Tung xúc xắc",val:1}]); }
+    else await sleep(700);
+    const [a,b]=await animateRoll();
+    log(`${p.name} tung được <b>${a} + ${b} = ${a+b}</b>${a===b?" (ĐÔI!)":""}.`);
+    if(a===b){
+      p.doubleStreak=(p.doubleStreak||0)+1;
+      if(p.doubleStreak>=3){log(`3 lần đôi liên tiếp — quá tham!`,true); sendToJail(p); break;}
+    }
+    await stepMove(p,a+b);
+    if(a===b && p.alive && !p.inJail && !p.jailedNow && !gameOver) again=true;
+  }
+  await endPhase(p);
+}
+async function endPhase(p){
+  if(gameOver) return;
+  if(p.alive){
+    if(isAIp(p)){ await aiManage(p); await sleep(420); }
+    else if(isLoc(p)){
+      endPhaseLocalRefresh(p);
+      $("turnbar").innerHTML=`${p.name}: xây nhà / cầm cố / giao dịch / chiếm đất xong thì kết thúc lượt.`;
+      const tb=$("btn-trade");
+      tb.disabled=false; tb.onclick=()=>openTradeLocal(p);
+      await waitClick("btn-end");
+      tb.disabled=true; tb.onclick=null;
+      $("manage-panel").style.display="none";
+    }
+    else{ /* remote */
+      sendTo(p.id,{t:"phase", mode:"manage"});
+      $("turnbar").innerHTML=`${p.name} (🌐) đang quản lý tài sản…`; updateUI();
+      while(true){
+        const m=await awaitAct(p.id);
+        if(m.a==="end") break;
+        if(["build","sellh","mort","redeem","tarup","tardown"].includes(m.a)) await applyManage(p, m.a, m.ci);
+        else if(m.a==="trade") await tradeAttempt(p, m.ci, m.offer);
+        if(!p.alive||gameOver) break;
+      }
+      sendTo(p.id,{t:"phase", mode:"idle"});
+    }
+  }
+  nextPlayer();
+}
+function endPhaseLocalRefresh(p){refreshManagePanel(p,(a,ci)=>{applyManage(p,a,ci).then(()=>{if(!gameOver&&p.alive)endPhaseLocalRefresh(p);});});}
+function nextPlayer(){
+  if(gameOver) return;
+  do{ cur=(cur+1)%P.length; }while(!P[cur].alive);
+  takeTurn(P[cur]);
+}
+
+/* ================= GUEST CLIENT ================= */
+function applyState(s){
+  s.ce.forEach((q,i)=>{Object.assign(C[i],{owner:q.o,houses:q.h,mortgaged:q.m,tariff:q.tr||1});});
+  const rebuild = P.length!==s.pl.length;
+  P=s.pl.map(q=>({id:q.id,name:q.name,kind:q.kind,ava:q.ava,color:q.color,cash:q.cash,pos:q.pos,alive:q.alive,inJail:q.inJail,jailTurns:0,tariffUsed:q.tu}));
+  cur=s.cur; turnCount=s.turnCount; buildSurcharge=s.buildSurcharge; cfg=s.cfg; lastRoll=s.lastRoll;
+  LOGS=s.logs||[]; renderLogs();
+  if(s.d){lastD=s.d; dieFace($("d1"),s.d[0]); dieFace($("d2"),s.d[1]);}
+  if(rebuild) buildTokens();
+  updateUI();
+  if(s.tb) $("turnbar").innerHTML=s.tb;
+  if(NET.manage){const me=P[NET.myId]; if(me) refreshManagePanel(me, guestSendManage);}
+}
+function guestSendManage(a, ci){ NET.host.send({t:"act", a, ci}); }
+async function guestTrade(){
+  const me=P[NET.myId]; if(!me) return;
+  const body=tradeFormBody(me);
+  if(!body){await modal("🤝 Giao dịch","Chưa có bất động sản nào của người khác để mua.",[{label:"OK",val:1}]); return;}
+  const ans=await modal("🤝 Đề nghị mua đất", body, [
+    {label:"Gửi đề nghị", val:()=>{
+      const ci=+document.getElementById("tr-prop").value;
+      const raw=+document.getElementById("tr-offer").value;
+      if(!raw||raw<=0) return undefined;
+      return {ci, ofr:Math.max(1, Math.round(raw/SC))};
+    }},
+    {label:"Hủy", val:null, cls:"btn-sec"},
+  ]);
+  if(!ans) return;
+  NET.host.send({t:"act", a:"trade", ci:ans.ci, offer:ans.ofr});
+}
+function startGuest(code, name){
+  NET.mode="guest";
+  showWait("⏳ Đang kết nối…", "Đang tìm phòng <b>"+code+"</b>…");
+  const peer=new Peer();
+  NET.peer=peer;
+  peer.on("error",e=>{showWait("⚠️ Lỗi kết nối", "Không vào được phòng <b>"+code+"</b>.<br>Kiểm tra mã phòng và thử tải lại trang.");});
+  peer.on("open",()=>{
+    const conn=peer.connect("ctpw6-"+code,{reliable:true});
+    NET.host=conn;
+    conn.on("open",()=>{conn.send({t:"join", name}); showWait("⏳ Đã vào phòng "+code, "Chờ chủ phòng bắt đầu ván đấu…");});
+    conn.on("close",()=>{showWait("📡 Mất kết nối","Chủ phòng đã thoát hoặc mạng gián đoạn.<br>Tải lại trang để chơi ván khác.");});
+    conn.on("data", async m=>{
+      if(m.t==="init"){NET.myId=m.you;}
+      else if(m.t==="state"){ if(!NET.firstState){NET.firstState=true; hideWait();} applyState(m); }
+      else if(m.t==="ask"){
+        const idx=await modal(m.title, m.body, m.buttons.map((b,i)=>({label:b.label, cls:b.cls||"btn-main", val:i})));
+        conn.send({t:"ans", id:m.id, idx});
+      }
+      else if(m.t==="notice"){ await modal(m.title, m.body, [{label:"OK", val:1}]); }
+      else if(m.t==="phase"){
+        NET.manage = m.mode==="manage";
+        const me=P[NET.myId];
+        if(NET.manage&&me){
+          $("turnbar").innerHTML=`${me.name}: xây / cầm cố / giao dịch xong thì kết thúc lượt.`;
+          refreshManagePanel(me, guestSendManage);
+          const tb=$("btn-trade"); tb.disabled=false; tb.onclick=guestTrade;
+          const be=$("btn-end"); be.disabled=false; be.onclick=()=>{be.disabled=true; $("btn-trade").disabled=true; NET.host.send({t:"act", a:"end"}); NET.manage=false; $("manage-panel").style.display="none";};
+        }else{
+          $("btn-trade").disabled=true; $("btn-end").disabled=true; $("manage-panel").style.display="none";
+        }
+      }
+      else if(m.t==="full"){ showWait("😢 Phòng đầy", "Phòng này đã đủ người chơi."); }
+    });
+  });
+}
+
+/* ================= HOST LOBBY ================= */
+function hostLobby(code){
+  return new Promise(res=>{
+    const need=P.filter(q=>q.kind==="remote");
+    function lobbyBody(){
+      return `Gửi mã phòng cho bạn bè — họ mở cùng file/link này, chọn <b>"Vào phòng online"</b> và nhập mã:<div class="roomcode">${code}</div>`+
+        need.map(q=>`<div style="font-size:13px; padding:3px">${q.ava} Slot ${q.id+1}: ${q.connected?`<b style="color:var(--good)">${q.name} ✓</b>`:"<i style='color:var(--muted)'>đang chờ…</i>"}</div>`).join("");
+    }
+    showWait("🌐 Phòng đã mở", lobbyBody());
+    const peer=new Peer("ctpw6-"+code);
+    NET.peer=peer; NET.mode="host";
+    peer.on("error",e=>{ if(String(e.type)==="unavailable-id"){ location.reload(); } });
+    peer.on("connection",conn=>{
+      let pid=null;
+      conn.on("data",m=>{
+        if(m.t==="join"&&pid===null){
+          const slot=P.find(q=>q.kind==="remote"&&!q.connected);
+          if(!slot){try{conn.send({t:"full"});}catch(e){} return;}
+          pid=slot.id; slot.connected=true;
+          slot.name=((m.name||"").trim()||slot.name).slice(0,14);
+          NET.conns.push({pid, conn});
+          conn.send({t:"init", you:pid});
+          conn.on("close",()=>onGuestDrop(pid));
+          showWait("🌐 Phòng đã mở", lobbyBody());
+          if(need.every(q=>q.connected)){ hideWait(); res(); }
+        }else if(pid!==null){
+          if(m.t==="ans"){const pd=NET.pending[m.id]; if(pd){delete NET.pending[m.id]; pd.res(pd.vals[m.idx]);}}
+          else if(m.t==="act"){const q=NET.queue[pid]; if(q&&q.length){q.shift()(m);}}
+        }
+      });
+    });
+  });
+}
+
+/* ================= SETUP ================= */
+async function setupScreen(allowOnline){
+  const defaults=[["Người chơi 1","h"],["AI Hùng","a"],["AI Mai","a"],["AI Tuấn","a"]];
+  const typeOpts=i=>`
+        <option value="h">Người (máy này)</option>
+        <option value="a" ${i>0?"selected":""}>AI</option>
+        ${allowOnline?'<option value="o">🌐 Online</option>':""}
+        ${i>=2?'<option value="x">Tắt</option>':""}`;
+  const rows=defaults.map((d,i)=>`
+    <div class="setup-row">
+      <button type="button" class="sava" id="st-ava${i}" style="background:${COLORS[i]}" onclick="cycleAva(${i})" title="Bấm để đổi hình đại diện">${AVAS[i]}</button>
+      <input type="text" id="st-name${i}" value="${d[0]}" maxlength="14" placeholder="Tên người chơi…">
+      <select id="st-type${i}">${typeOpts(i)}</select>
+    </div>`).join("");
+  const body=`${rows}
+    <div style="font-size:11px;color:var(--muted);margin-top:9px">Bấm vào <b>hình tròn</b> để đổi đại diện — quý tộc 👑💎, con vật 🐯🦅, thành phố 🗽🗼, tuỳ gu.</div>
+    <div class="setup-opts">
+      <label>Vốn khởi điểm:
+        <select id="st-cash" style="width:auto;margin-top:0">
+          <option value="1000" selected>$10B (gắt 💀)</option>
+          <option value="1200">$12B</option>
+          <option value="1500">$15B (dễ thở)</option>
+        </select>
+      </label>
+    </div>
+    <div class="harsh-box">
+      <label style="cursor:pointer"><input type="checkbox" id="st-harsh" checked> <b>💀 Chế độ Khắc Nghiệt</b></label><br>
+      Lương $1.2B · phí bảo trì $150M/BĐS · thuế tài sản 12% · lãi cầm cố 4%/lượt · biến động kinh tế mỗi 12 lượt. Cộng luật chuỗi ×100 và ⚔️ chiếm đất — phá sản đến rất nhanh.
+    </div>
+    ${allowOnline?'<div style="font-size:11px;color:var(--muted);margin-top:10px">Chọn 🌐 Online cho ghế của bạn bè chơi từ máy khác — tên của họ sẽ tự cập nhật khi vào phòng.</div>':'<div style="font-size:11px;color:var(--muted);margin-top:10px">Nhiều "Người (máy này)" = hot-seat, chuyền lượt cho nhau.</div>'}`;
+  while(true){
+    const ans=await modal("♛ Thiết lập ván đấu", body, [{label:"Bắt đầu 🎲", val:()=>{
+      const ps=[];
+      for(let i=0;i<4;i++){
+        const type=document.getElementById("st-type"+i).value;
+        if(type==="x") continue;
+        const name=(document.getElementById("st-name"+i).value.trim()||defaults[i][0]).slice(0,14);
+        const ava=(document.getElementById("st-ava"+i)||{textContent:AVAS[i]}).textContent.trim()||AVAS[i];
+        ps.push({name, type, slot:i, ava});
+      }
+      if(ps.length<2) return undefined;
+      if(!ps.some(q=>q.type==="h")) return undefined;
+      return {ps, harsh:document.getElementById("st-harsh").checked, cash:+document.getElementById("st-cash").value};
+    }}]);
+    if(ans){
+      cfg={harsh:ans.harsh, cash:ans.cash, salary:ans.harsh?120:200};
+      P=ans.ps.map((q,i)=>({id:i, name:q.name, kind:q.type==="h"?"local":(q.type==="o"?"remote":"ai"), ava:q.ava||AVAS[q.slot], color:COLORS[q.slot], cash:cfg.cash, pos:0, alive:true, inJail:false, jailTurns:0, connected:false}));
+      return;
+    }
+  }
+}
+
+/* ================= HALL OF FAME ================= */
+const HOF_KEY="ctpw-hof";
+function recordHof(){
+  if(NET.mode==="guest") return;
+  try{
+    const h=JSON.parse(localStorage.getItem(HOF_KEY)||"[]");
+    const round=Math.floor(turnCount/Math.max(1,P.length))+1;
+    const champs=alive();
+    P.forEach(p=>h.push({n:p.name, ai:p.kind==="ai", nw:netWorth(p), cash:p.cash,
+      props:C.filter(c=>c.owner===p.id).length, w:(p.alive&&champs.length===1&&champs[0]===p)?1:0,
+      r:round, d:new Date().toISOString().slice(0,10)}));
+    h.sort((a,b)=>b.nw-a.nw);
+    localStorage.setItem(HOF_KEY, JSON.stringify(h.slice(0,30)));
+  }catch(e){}
+}
+function showHof(){
+  let h=[];
+  try{h=JSON.parse(localStorage.getItem(HOF_KEY)||"[]");}catch(e){}
+  let body;
+  if(!h.length){
+    body="Chưa có ván nào hoàn thành trên máy này.<br>Đánh xong một ván, thành tích sẽ được ghi danh tại đây. 🎩";
+  }else{
+    const medals=["🥇","🥈","🥉"];
+    body='<div style="text-align:left; font-size:12px; color:var(--muted); margin-bottom:8px">Top thành tích mọi thời đại (máy này) — xếp theo tài sản ròng lúc kết thúc ván:</div>'+
+      h.slice(0,10).map((e,i)=>`<div class="lb-row"><span style="width:24px">${medals[i]||(i+1)+"."}</span><span>${e.w?"🏆 ":""}${e.n}${e.ai?" <span style='font-size:9px;opacity:.6'>AI</span>":""}<br><span style="font-size:10px;color:var(--muted)">💵 ${fmt(e.cash)} · 🏠 ${e.props} BĐS · vòng ${e.r} · ${e.d}</span></span><b>${fmt(e.nw)}</b></div>`).join("");
+    if(P.length&&!gameOver){
+      const live=[...P].filter(p=>p.alive).sort((a,b)=>netWorth(b)-netWorth(a));
+      body+='<div style="text-align:left; font-size:12px; color:var(--muted); margin:10px 0 6px">Ván hiện tại:</div>'+
+        live.map((p,i)=>`<div class="lb-row"><span>${i+1}.</span><span>${p.ava} ${p.name}<br><span style="font-size:10px;color:var(--muted)">💵 ${fmt(p.cash)} · 🏠 ${C.filter(c=>c.owner===p.id).length} BĐS</span></span><b>${fmt(netWorth(p))}</b></div>`).join("");
+    }
+  }
+  modal("🏆 BẢNG VÀNG TỶ PHÚ", body, [{label:"Đóng", val:1}]);
+}
+
+/* ================= THEME ================= */
+function applyTheme(t){
+  document.body.classList.toggle("dark", t==="dark");
+  const b=$("btn-theme"); if(b) b.textContent = t==="dark" ? "Light mode" : "Dark mode";
+  try{localStorage.setItem("ctpw-theme", t);}catch(e){}
+}
+applyTheme(localStorage.getItem("ctpw-theme")==="dark"?"dark":"light");
+
+/* ================= ORDER ROLL ================= */
+async function rollOrder(){
+  log("🎲 <b>Tung xúc xắc giành lượt đi trước!</b>", true);
+  for(const p of P){
+    $("turnbar").innerHTML=`${p.ava} ${p.name} tung xúc xắc giành lượt…`;
+    const [a,b]=await animateRoll();
+    p._ord=a+b+Math.random()*0.01;
+    log(`${p.name} tung được <b>${a}+${b} = ${a+b}</b>.`);
+    await sleep(450);
+  }
+  P.sort((x,y)=>y._ord-x._ord);
+  const o2n={}; P.forEach((p,i)=>{o2n[p.id]=i;});
+  P.forEach((p,i)=>{p.id=i; delete p._ord;});
+  NET.conns.forEach(c=>{c.pid=o2n[c.pid]; try{c.conn.send({t:"init", you:c.pid});}catch(e){}});
+  cur=0; lastRoll=7;
+  const body=P.map((p,i)=>`<div class="lb-row"><span>${i+1}.</span><span>${p.ava} ${p.name}</span></div>`).join("");
+  log(`📜 Thứ tự chơi: ${P.map(p=>p.name).join(" → ")}.`, true);
+  bcast({t:"notice", title:"📜 THỨ TỰ CHƠI", body});
+  await modal("📜 THỨ TỰ CHƠI", body, [{label:"Bắt đầu", val:1}]);
+}
+
+/* ================= TOP BUTTONS ================= */
+$("btn-new").onclick=async ()=>{
+  const ok=await modal("↺ Ván mới","Xoá ván đang chơi và bắt đầu lại?",[{label:"Ván mới",val:1},{label:"Hủy",val:0,cls:"btn-sec"}]);
+  if(ok){localStorage.removeItem(SAVE_KEY); location.reload();}
+};
+$("btn-speed").onclick=()=>{
+  SPD = SPD===1 ? 0.45 : 1;
+  $("btn-speed").textContent = SPD===1 ? "Tốc độ: Thường" : "Tốc độ: Nhanh";
+};
+$("btn-theme").onclick=()=>{applyTheme(document.body.classList.contains("dark")?"light":"dark");};
+$("btn-hof").onclick=showHof;
+$("btn-sound").onclick=()=>{
+  soundOn=!soundOn;
+  $("btn-sound").textContent = soundOn ? "Âm thanh: Bật" : "Âm thanh: Tắt";
+};
+
+/* ================= INIT ================= */
+buildCells();
+(async ()=>{
+  const hasPeer = typeof Peer!=="undefined";
+  const mode=await modal("♛ CỜ TỶ PHÚ THẾ GIỚI", "Chơi kiểu gì hôm nay?", [
+    {label:"🖥️ Chơi trên máy này", val:"local"},
+    ...(hasPeer?[{label:"🌐 Tạo phòng online", val:"host", cls:"btn-sec"},{label:"🔑 Vào phòng online", val:"join", cls:"btn-sec"}]:[]),
+  ]);
+  if(mode==="join"){
+    const j=await modal("🔑 Vào phòng online", `<input type="text" id="jn-code" maxlength="5" placeholder="Mã phòng (5 ký tự)" style="text-transform:uppercase; text-align:center; letter-spacing:6px; font-size:18px"><input type="text" id="jn-name" maxlength="14" placeholder="Tên của bạn">`, [
+      {label:"Vào phòng", val:()=>{
+        const code=(document.getElementById("jn-code").value||"").trim().toUpperCase();
+        const name=(document.getElementById("jn-name").value||"").trim();
+        if(code.length!==5||!name) return undefined;
+        return {code,name};
+      }},
+      {label:"Quay lại", val:null, cls:"btn-sec"},
+    ]);
+    if(!j){ location.reload(); return; }
+    startGuest(j.code, j.name);
+    return;
+  }
+  let resumed=false;
+  if(mode==="local" && localStorage.getItem(SAVE_KEY)){
+    const ans=await modal("💾 Ván chưa hoàn thành","Phát hiện ván đấu đang dở. Chơi tiếp hay bắt đầu ván mới?",
+      [{label:"Chơi tiếp",val:1},{label:"Ván mới",val:0,cls:"btn-sec"}]);
+    if(ans) resumed=loadGame();
+    if(!resumed) localStorage.removeItem(SAVE_KEY);
+  }
+  if(!resumed) await setupScreen(mode==="host");
+  if(mode==="host" && P.some(q=>q.kind==="remote")){
+    await hostLobby(roomCode());
+  }
+  if(!resumed) await rollOrder();
+  buildTokens();
+  updateUI();
+  const humans=P.filter(q=>q.kind!=="ai").map(q=>q.name).join(", ");
+  log(resumed?`💾 Đã khôi phục ván đấu. Tiếp tục nào!`:`Chào mừng đến <b>Cờ Tỷ Phú Thế Giới</b> 🌍! ${humans} vào trận${cfg.harsh?" — <b>chế độ Khắc Nghiệt 💀</b>":""}. Chúc may mắn! 🎲`, true);
+  requestAnimationFrame(placeTokens);
+  takeTurn(P[cur]);
+})();
+</script>
+</body>
+</html>
