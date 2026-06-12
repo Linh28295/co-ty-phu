@@ -1601,6 +1601,14 @@ $("btn-sound").onclick=()=>{
 /* ================= INIT ================= */
 buildCells();
 (async ()=>{
+  if(!localStorage.getItem("ctpw-rules-seen")){
+    const det=document.querySelector("details");
+    const html=[...det.children].filter(x=>x.tagName!=="SUMMARY").map(x=>x.outerHTML).join("");
+    await modal("📜 Cách chơi — đọc 2 phút là chiến được",
+      `<div style="max-height:58vh;overflow-y:auto;text-align:left;padding-right:6px">${html}</div>`,
+      [{label:"Đã hiểu — vào game ♛", val:1}]);
+    try{localStorage.setItem("ctpw-rules-seen","1");}catch(e){}
+  }
   const hasPeer = typeof Peer!=="undefined";
   const mode=await modal("♛ CỜ TỶ PHÚ THẾ GIỚI", "Chơi kiểu gì hôm nay?", [
     {label:"🖥️ Chơi trên máy này", val:"local"},
